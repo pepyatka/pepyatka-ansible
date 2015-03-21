@@ -1,0 +1,5 @@
+[target]
+188.166.9.62 ansible_ssh_user=root
+
+[redis:children]
+target
