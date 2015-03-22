@@ -35,4 +35,4 @@ Check if all servers are up:
 
 Check status of the redis service:
 
-    ansible -i hosts redis "systemctl status redis"
+    ansible -i hosts redis -a "systemctl status redis"
