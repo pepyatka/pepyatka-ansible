@@ -3,3 +3,9 @@
 
 [redis:children]
 target
+
+[elasticsearch:children]
+target
+
+[pepyatka_server:children]
+target
