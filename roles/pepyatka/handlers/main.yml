@@ -1,0 +1,6 @@
+---
+
+- name: restart pepyatka
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  command: chdir="{{ pepyatka_home_dir }}" forever restart pepyatka-server/index.js

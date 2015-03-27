@@ -1,0 +1,4 @@
+---
+
+ssh_authorized_keys:
+  - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfIeeYsS5bVoVxXkgOlKtnMq9/az0bFBD6V+hO8Hev4nEKagymL5Aat5wjJCVeNnSWrodeeMRyTIRqJuu5GRuFsOCmPy/K04R0htdhWCMJ1nS/gxsjVt+CadO78EJAcm6B6Cc4IOVAmipdvL/ICslWJiwkdLF9HeyyV/q7q1f6zfh0V9JboNKvh7/ClHTOUiYeUDjganm1APjBW2N87qqBz0dsEjZFU2YkYgz79tCu77s/wbYt4p+jq/f10Y3nsBGQ0N/5+vjK4vAxX0YEMGGC0vm1Cs/pUjNjc/Mr6DtWq6mC9UsckAQUCjXCj0JwFdKCypnSaEg7bjO8ojbx6+xB dev@dyachkov.org"

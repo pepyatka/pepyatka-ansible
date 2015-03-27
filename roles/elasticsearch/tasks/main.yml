@@ -1,7 +1,7 @@
 ---
 
 - name: Download Oracle JDK RPM
-  command: 'wget -q --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" "{{ jdk_download_url }}" -O "{{ jdk_rpm_name }}"'
+  command: 'wget -q --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" "{{ jdk_download_url }}" -O "{{ jdk_download_path }}/{{ jdk_rpm_name }}"'
   args:
     creates: "{{ jdk_download_path }}/{{ jdk_rpm_name }}"
 

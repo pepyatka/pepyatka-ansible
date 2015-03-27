@@ -1,0 +1,62 @@
+---
+# file: nginx/tasks/main.yml
+
+- name: install nginx
+  yum: pkg=nginx state=present
+  tags:
+    - nginx
+
+- name: Install ca-certificates
+  yum: name=ca-certificates state=present
+  tags:
+    - nginx
+
+- name: Enable the dynamic CA configuration feature
+  command: update-ca-trust enable
+  tags:
+    - nginx
+
+- name: Deploy server root certificate
+  copy:
+    content="{{ server_root_cert }}"
+    dest=/etc/pki/ca-trust/source/anchors/pepyatkaCA.crt
+  when: server_root_cert is defined
+  tags:
+    - nginx
+
+- name: Update ca-trust
+  command: update-ca-trust extract
+  tags:
+    - nginx
+
+- name: Ensure /etc/nginx/ssl
+  file: path=/etc/nginx/ssl state=directory
+  tags:
+    - nginx
+
+- name: Deploy server certificate
+  copy:
+    content="{{ server_cert }}"
+    dest=/etc/nginx/ssl/api.pepyatka.crt
+  when: server_cert is defined
+  tags:
+    - nginx
+
+- name: Deploy server certificate key
+  copy:
+    content="{{ server_cert_key }}"
+    dest=/etc/nginx/ssl/api.pepyatka.key
+  when: server_cert_key is defined
+  tags:
+    - nginx
+
+- name: Deploy nginx config
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify: reload nginx
+  tags:
+    - nginx
+
+- name: Ensure nginx is running and enabled
+  service: name=nginx state=running enabled=yes
+  tags:
+    - nginx

@@ -1,0 +1,16 @@
+ssh_permit_root_login: "without-password"
+ssh_listen_address: ['0.0.0.0']
+ssh_loglevel: "VERBOSE"
+ssh_max_auth_tries: "3"
+ssh_password_authentication: "no"
+ssh_rsa_authentication: "yes"
+ssh_use_dns: "yes"
+ssh_x11_forwarding: "no"
+ssh_print_motd: "yes"
+ssh_gss_api_authentication: "yes"
+ssh_gss_api_cleanup_credentials: "yes"
+ssh_gss_api_key_exchange: "yes"
+ssh_ciphers: ""
+ssh_client_alive_interval: ""
+ssh_authorized_keys: []
+ssh_authorized_keys_command: ""

@@ -1,0 +1,26 @@
+---
+
+- name: Install openssh-server
+  yum: name="openssh-server" state=present
+
+- name: Deploy sshd configuration
+  template: src=sshd_config.j2 dest=/etc/ssh/sshd_config owner=root group=root mode=0600
+  notify:
+    - set SELinux permissions
+    - restart sshd
+
+- name: Create /root/.ssh directory
+  file: state=directory path=/root/.ssh owner=root group=root mode=700
+
+- name: Remove authorized_keys
+  file: name="{{ item }}" state=absent
+  with_items:
+    - /root/.ssh/authorized_keys
+    - /root/.ssh/authorized_keys2
+  when: ssh_permit_root_login != "yes" and ssh_permit_root_login != "without-password"
+
+- name: Deploy authorized_keys
+  template: src=authorized_keys.j2 dest=/root/.ssh/authorized_keys owner=root group=root mode=0400
+  notify:
+    - set SELinux permissions
+  when: (ssh_permit_root_login == "yes" or ssh_permit_root_login == "without-password") and ssh_authorized_keys != []

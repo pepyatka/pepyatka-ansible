@@ -1,0 +1,15 @@
+[staging]
+staging.pepyatka.com
+
+[staging:vars]
+ansible_ssh_user=root
+
+[redis]
+staging.pepyatka.com
+
+[elasticsearch]
+staging.pepyatka.com
+
+[pepyatka]
+staging.pepyatka.com
+

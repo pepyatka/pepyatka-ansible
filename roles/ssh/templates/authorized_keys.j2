@@ -1,0 +1,5 @@
+{% if ssh_authorized_keys != [] %}
+{% for item in ssh_authorized_keys %}
+{{ item }}
+{% endfor %}
+{% endif %}

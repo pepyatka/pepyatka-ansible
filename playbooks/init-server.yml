@@ -1,8 +1,11 @@
 ---
 - hosts: all
   roles:
+    - ssh
+    - fail2ban
     - redis
     - graphicsmagick
     - elasticsearch
     - nodejs
-    - pepyatka-server
+    - pepyatka
+    - nginx

@@ -1,0 +1,101 @@
+---
+
+- name: Install git
+  yum: name=git state=present
+
+- name: Create pepyatka user
+  user:
+    name: "{{ pepyatka_user }}"
+    home: "{{ pepyatka_home_dir }}"
+    createhome: yes
+    system: yes
+
+- name: Clone pepyatka-server
+  local_action: git repo="{{ pepyatka_server_repo }}" update=yes dest=pepyatka-server version="{{ pepyatka_version }}"
+
+- name: Clone pepyatka-client
+  local_action: git repo="{{ pepyatka_client_repo }}" update=yes dest=pepyatka-client version="{{ pepyatka_version }}"
+
+- name: Deploy pepyatka-server
+  synchronize:
+    src: pepyatka-server
+    dest: "{{ pepyatka_home_dir }}/"
+    recursive: yes
+    mode: push
+    delete: yes
+    rsync_opts: --no-motd,--exclude=.git
+  notify:
+    - restart pepyatka
+
+- name: Fix pepyatka-server permissions
+  file:
+    path: "{{ pepyatka_home_dir }}/pepyatka-server"
+    owner: "{{ pepyatka_user }}"
+    group: "{{ pepyatka_group }}"
+    state: directory
+    recurse: yes
+
+- name: Write development.js
+  template: src=development.js.j2 dest="{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+  notify:
+    - restart pepyatka
+
+- name: Install pepyatka-server dependencies
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
+
+- name: Install forever
+  npm: name=forever global=yes state=latest
+
+- name: Check list of Node.js apps running
+  command: forever list
+  register: forever_list
+  changed_when: false
+
+- name: Start pepyatka-server
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  environment:
+    NODE_ENV: development
+  command: chdir="{{ pepyatka_home_dir }}" forever start pepyatka-server/index.js
+  when: "forever_list.stdout.find('pepyatka-server/index.js') == -1"
+
+- name: Ensure /var/www/pepyatka
+  file:
+    path: /var/www/pepyatka
+    state: directory
+    owner: "{{ pepyatka_user }}"
+    group: nginx
+
+- name: Deploy pepyatka-client
+  synchronize:
+    src: pepyatka-client
+    dest: /var/www/
+    recursive: yes
+    mode: push
+    delete: yes
+    rsync_opts: --no-motd,--exclude=.git
+
+- name: Fix pepyatka-client permissions
+  file:
+    path: /var/www/pepyatka-client
+    owner: "{{ pepyatka_user }}"
+    group: nginx
+    state: directory
+    recurse: yes
+
+- name: Write client's config.js
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  template: src=client_config.js.j2 dest=/var/www/pepyatka-client/public/js/config.js
+
+- name: Write client's ApplicationAdapter.js
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  template: src=ApplicationAdapter.js.j2 dest=/var/www/pepyatka-client/public/js/app/adapters/ApplicationAdapter.js
+
+- name: Install pepyatka-client dependencies
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  npm: path=/var/www/pepyatka-client
