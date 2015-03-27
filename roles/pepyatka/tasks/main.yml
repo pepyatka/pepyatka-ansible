@@ -35,11 +35,6 @@
     state: directory
     recurse: yes
 
-- name: Write development.js
-  template: src=development.js.j2 dest="{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
-  notify:
-    - restart pepyatka
-
 - name: Install pepyatka-server dependencies
   su: yes
   su_user: "{{ pepyatka_user }}"
@@ -47,6 +42,11 @@
 
 - name: Install forever
   npm: name=forever global=yes state=latest
+
+- name: Write development.js
+  template: src=development.js.j2 dest="{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+  notify:
+    - restart pepyatka
 
 - name: Check list of Node.js apps running
   command: forever list
