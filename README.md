@@ -24,9 +24,8 @@ I recommend to add the following alias in your .bashrc:
 Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
-Update server IP in the hosts file and run:
 
-    play -i hosts playbooks/init-server.yml
+    play -i staging playbooks/init-server.yml --vault-password-file mypassword.txt
 
 ## Ad-hoc commands
 Check if all servers are up:
