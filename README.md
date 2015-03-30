@@ -25,7 +25,7 @@ Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
 
-    play -i staging playbooks/init-server.yml --vault-password-file mypassword.txt
+    play -i staging playbooks/site.yml --vault-password-file mypassword.txt
 
 ## Ad-hoc commands
 Check if all servers are up:

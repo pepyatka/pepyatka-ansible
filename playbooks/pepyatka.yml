@@ -1,11 +1,7 @@
 ---
-- hosts: all
+- hosts: pepyatka
   roles:
-    - ssh
-    - fail2ban
-    - redis
     - graphicsmagick
-    - elasticsearch
     - nodejs
     - pepyatka
     - nginx

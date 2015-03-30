@@ -1,8 +1,5 @@
 ---
 
-- name: Install git
-  yum: name=git state=present
-
 - name: Create pepyatka user
   user:
     name: "{{ pepyatka_user }}"
@@ -12,9 +9,6 @@
 
 - name: Clone pepyatka-server
   local_action: git repo="{{ pepyatka_server_repo }}" update=yes dest=pepyatka-server version="{{ pepyatka_version }}"
-
-- name: Clone pepyatka-client
-  local_action: git repo="{{ pepyatka_client_repo }}" update=yes dest=pepyatka-client version="{{ pepyatka_version }}"
 
 - name: Deploy pepyatka-server
   synchronize:
@@ -60,6 +54,9 @@
     NODE_ENV: development
   command: chdir="{{ pepyatka_home_dir }}" forever start pepyatka-server/index.js
   when: "forever_list.stdout.find('pepyatka-server/index.js') == -1"
+
+- name: Clone pepyatka-client
+  local_action: git repo="{{ pepyatka_client_repo }}" update=yes dest=pepyatka-client version="{{ pepyatka_version }}"
 
 - name: Ensure /var/www/pepyatka
   file:
