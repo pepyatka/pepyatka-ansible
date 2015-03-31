@@ -37,8 +37,13 @@
 - name: Install forever
   npm: name=forever global=yes state=latest
 
-- name: Write development.js
-  template: src=development.js.j2 dest="{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+- name: Fix server name in development.js
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+    regexp: "http://localhost:3333"
+    replace: "https://{{ inventory_hostname }}"
   notify:
     - restart pepyatka
 
@@ -82,15 +87,21 @@
     state: directory
     recurse: yes
 
-- name: Write client's config.js
+- name: Fix server name in public/js/config.js
   su: yes
   su_user: "{{ pepyatka_user }}"
-  template: src=client_config.js.j2 dest=/var/www/pepyatka-client/public/js/config.js
+  replace:
+    dest: /var/www/pepyatka-client/public/js/config.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
 
-- name: Write client's ApplicationAdapter.js
+- name: Fix server name in public/js/app/adapters/ApplicationAdapter.js
   su: yes
   su_user: "{{ pepyatka_user }}"
-  template: src=ApplicationAdapter.js.j2 dest=/var/www/pepyatka-client/public/js/app/adapters/ApplicationAdapter.js
+  replace:
+    dest: /var/www/pepyatka-client/public/js/app/adapters/ApplicationAdapter.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
 
 - name: Install pepyatka-client dependencies
   su: yes
