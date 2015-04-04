@@ -14,3 +14,5 @@ ssh_ciphers: ""
 ssh_client_alive_interval: ""
 ssh_authorized_keys: []
 ssh_authorized_keys_command: ""
+
+security_autoupdate_enabled: true
