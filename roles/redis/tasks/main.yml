@@ -1,26 +1,45 @@
 ---
 
-- name: Install packages
-  yum: name={{ item }} state=present
-  with_items:
-    - libselinux-python
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - redis
+
+- include: packages-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - redis
+
+- include: packages-Debian.yml
+  when: ansible_os_family == 'Debian'
+  tags:
     - redis
 
 - name: Deploy redis configuration file
   template: src=redis.conf.j2 dest=/etc/redis.conf
   notify:
    - restart redis
+  tags:
+    - redis
 
 - name: Set vm.overcommit_memory=1
   sysctl: name=vm.overcommit_memory value=1 state=present
+  tags:
+    - redis
 
 - name: Ensure redis service is started and enabled
-  service: name=redis state=started enabled=yes
+  service: name={{ redis_service_name }} state=started enabled=yes
+  tags:
+    - redis
 
 - name: Ensure redis is up and running
   command: redis-cli ping
   register: redis_response
+  tags:
+    - redis
 
 - name: assert redis is up
   fail: msg='redis is not happy'
   when: redis_response.stdout != "PONG"
+  tags:
+    - redis
