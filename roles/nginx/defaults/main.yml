@@ -1,0 +1,6 @@
+---
+
+pepyatka_html_repo: git@github.com:pepyatka/pepyatka-html.git
+pepyatka_version: development
+www_user: www-data
+www_group: www-data

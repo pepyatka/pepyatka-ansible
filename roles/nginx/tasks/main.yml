@@ -1,31 +1,16 @@
 ---
 # file: nginx/tasks/main.yml
 
-- name: install nginx
-  yum: pkg=nginx state=present
+- fail: msg="Nginx role is only supported for Ubuntu"
+  when: ansible_distribution != 'Ubuntu'
+
+- name: Add nginx apt repository
+  apt_repository: repo='ppa:nginx/stable' state=present
   tags:
     - nginx
 
-- name: Install ca-certificates
-  yum: name=ca-certificates state=present
-  tags:
-    - nginx
-
-- name: Enable the dynamic CA configuration feature
-  command: update-ca-trust enable
-  tags:
-    - nginx
-
-- name: Deploy server root certificate
-  copy:
-    content="{{ server_root_cert }}"
-    dest=/etc/pki/ca-trust/source/anchors/pepyatkaCA.crt
-  when: server_root_cert is defined
-  tags:
-    - nginx
-
-- name: Update ca-trust
-  command: update-ca-trust extract
+- name: Install nginx
+  apt: name=nginx state=present update_cache=true
   tags:
     - nginx
 
@@ -38,6 +23,7 @@
   copy:
     content="{{ server_cert }}"
     dest=/etc/nginx/ssl/api.pepyatka.crt
+    mode=0600
   when: server_cert is defined
   tags:
     - nginx
@@ -46,6 +32,7 @@
   copy:
     content="{{ server_cert_key }}"
     dest=/etc/nginx/ssl/api.pepyatka.key
+    mode=0600
   when: server_cert_key is defined
   tags:
     - nginx
@@ -54,6 +41,63 @@
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
   notify: reload nginx
   tags:
+    - nginx
+
+- name: Clone pepyatka-html
+  local_action: git repo="{{ pepyatka_html_repo }}" update=yes dest=pepyatka-html version="{{ pepyatka_version }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Ensure /var/www/pepyatka
+  file:
+    path: /var/www/pepyatka
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Deploy pepyatka-html
+  synchronize:
+    src: pepyatka-html
+    dest: /var/www/
+    recursive: yes
+    mode: push
+    delete: yes
+    rsync_opts: --no-motd,--exclude=.git
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fix server name in public/js/config.js
+  replace:
+    dest: /var/www/pepyatka-html/public/js/config.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fix server name in public/js/app/adapters/ApplicationAdapter.js
+  replace:
+    dest: /var/www/pepyatka-html/public/js/app/adapters/ApplicationAdapter.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fix pepyatka-html permissions
+  file:
+    path: /var/www/pepyatka-html
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    state: directory
+    recurse: yes
+  tags:
+    - pepyatka
     - nginx
 
 - name: Ensure nginx is running and enabled
