@@ -89,6 +89,28 @@
     - pepyatka
     - nginx
 
+- name: Install jake
+  npm: name=jake global=yes state=latest
+  tags:
+    - pepyatka
+
+- name: Install pepyatka-html dependencies
+  npm: path=/var/www/pepyatka-html
+  tags:
+    - pepyatka
+
+- name: Compile css
+  command: chdir=/var/www/pepyatka-html jake themes
+
+- name: Compile js
+  command: chdir=/var/www/pepyatka-html jake compile
+
+- name: Copy main.js
+  command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/main.js
+
+- name: Copy app/main.js
+  command: cp /var/www/pepyatka-html/dist/app/main.js /var/www/pepyatka-html/public/js/app/main.js
+
 - name: Fix pepyatka-html permissions
   file:
     path: /var/www/pepyatka-html

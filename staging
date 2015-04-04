@@ -1,11 +1,10 @@
 [staging]
 app.pepyatka.com
-web.pepyatka.com
 es.pepyatka.com
 
 [staging:vars]
 ansible_ssh_user=root
-fe_hostname=web.pepyatka.com
+fe_hostname=app.pepyatka.com
 
 [redis]
 app.pepyatka.com
@@ -17,4 +16,4 @@ es.pepyatka.com
 app.pepyatka.com
 
 [nginx]
-web.pepyatka.com
+app.pepyatka.com

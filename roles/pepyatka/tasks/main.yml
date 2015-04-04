@@ -15,24 +15,6 @@
     - graphicsmagick
     - pepyatka
 
-- name: Add apt key for the nodesource repository
-  apt_key: url="https://deb.nodesource.com/gpgkey/nodesource.gpg.key" state=present
-  tags:
-    - nodejs
-    - pepyatka
-
-- name: Add the nodesource apt repository
-  apt_repository: repo="deb https://deb.nodesource.com/node trusty main" state=present
-  tags:
-    - nodejs
-    - pepyatka
-
-- name: Install NodeJS packages
-  apt: name=nodejs state=present
-  tags:
-    - nodejs
-    - pepyatka
-
 - name: Create pepyatka user
   user:
     name: "{{ pepyatka_user }}"
@@ -70,6 +52,11 @@
   tags:
     - pepyatka
 
+- name: Install pepyatka-server dependencies
+  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
+  tags:
+    - pepyatka
+
 - name: Fix pepyatka-server permissions
   file:
     path: "{{ pepyatka_home_dir }}/pepyatka-server"
@@ -77,13 +64,6 @@
     group: "{{ pepyatka_group }}"
     state: directory
     recurse: yes
-  tags:
-    - pepyatka
-
-- name: Install pepyatka-server dependencies
-  su: yes
-  su_user: "{{ pepyatka_user }}"
-  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
   tags:
     - pepyatka
 
