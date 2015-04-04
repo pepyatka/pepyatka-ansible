@@ -46,7 +46,7 @@ http {
     }
 
     server {
-      listen 443;
+      listen 0.0.0.0:443;
       server_name {{ inventory_hostname }};
       access_log /var/log/nginx/pepyatka.log;
 
