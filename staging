@@ -1,19 +1,20 @@
 [staging]
-app.pepyatka.com
-es.pepyatka.com
+pepyatka.com
 
 [staging:vars]
 ansible_ssh_user=root
-fe_hostname=app.pepyatka.com
+fe_hostname=pepyatka.com
+app_private_ip=127.0.0.0
+app_port=3000
 
 [redis]
-app.pepyatka.com
+pepyatka.com
 
 [elasticsearch]
-es.pepyatka.com
+pepyatka.com
 
 [pepyatka]
-app.pepyatka.com
+pepyatka.com
 
 [nginx]
-app.pepyatka.com
+pepyatka.com
