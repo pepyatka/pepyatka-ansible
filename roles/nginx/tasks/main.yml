@@ -4,51 +4,6 @@
 - fail: msg="Nginx role is only supported for Ubuntu"
   when: ansible_distribution != 'Ubuntu'
 
-- name: Add nginx apt repository
-  apt_repository: repo='ppa:nginx/stable' state=present
-  tags:
-    - nginx
-
-- name: Install nginx
-  apt: name=nginx state=present update_cache=true
-  tags:
-    - nginx
-
-- name: Ensure /etc/nginx/ssl
-  file: path=/etc/nginx/ssl state=directory
-  tags:
-    - nginx
-
-- name: Deploy server certificate
-  copy:
-    content="{{ server_cert }}"
-    dest=/etc/nginx/ssl/api.pepyatka.crt
-    mode=0600
-  when: server_cert is defined
-  tags:
-    - nginx
-
-- name: Deploy server certificate key
-  copy:
-    content="{{ server_cert_key }}"
-    dest=/etc/nginx/ssl/api.pepyatka.key
-    mode=0600
-  when: server_cert_key is defined
-  tags:
-    - nginx
-
-- name: Deploy nginx config
-  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
-  notify: reload nginx
-  tags:
-    - nginx
-
-- name: Clone pepyatka-html
-  local_action: git repo="{{ pepyatka_html_repo }}" update=yes dest=pepyatka-html version="{{ pepyatka_version }}"
-  tags:
-    - pepyatka
-    - nginx
-
 - name: Ensure /var/www/pepyatka
   file:
     path: /var/www/pepyatka
@@ -59,14 +14,15 @@
     - pepyatka
     - nginx
 
+- name: Ensure git is installed
+  apt: name=git state=present
+
 - name: Deploy pepyatka-html
-  synchronize:
-    src: pepyatka-html
-    dest: /var/www/
-    recursive: yes
-    mode: push
-    delete: yes
-    rsync_opts: --no-motd,--exclude=.git
+  git:
+    repo: "{{ pepyatka_html_repo }}"
+    update: yes
+    dest: /var/www/pepyatka-html
+    version: "{{ pepyatka_version }}"
   tags:
     - pepyatka
     - nginx
@@ -122,8 +78,47 @@
     - pepyatka
     - nginx
 
+- name: Add nginx apt repository
+  apt_repository: repo='ppa:nginx/stable' state=present
+  tags:
+    - nginx
+
+- name: Install nginx
+  apt: name=nginx state=present update_cache=true
+  tags:
+    - nginx
+
+- name: Ensure /etc/nginx/ssl
+  file: path=/etc/nginx/ssl state=directory
+  tags:
+    - nginx
+
+- name: Deploy server certificate
+  copy:
+    content="{{ server_cert }}"
+    dest=/etc/nginx/ssl/api.pepyatka.crt
+    mode=0600
+  when: server_cert is defined
+  tags:
+    - nginx
+
+- name: Deploy server certificate key
+  copy:
+    content="{{ server_cert_key }}"
+    dest=/etc/nginx/ssl/api.pepyatka.key
+    mode=0600
+  when: server_cert_key is defined
+  tags:
+    - nginx
+
+- name: Deploy nginx config
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify: reload nginx
+  tags:
+    - nginx
+
 - name: Start and enable nginx
-  service: name=nginx state=running enabled=yes
+  service: name=nginx state=started enabled=yes
   tags:
     - nginx
 

@@ -2,6 +2,6 @@
 
 pepyatka_user: pepyatka
 pepyatka_group: pepyatka
-pepyatka_server_repo: git@github.com:pepyatka/pepyatka-server.git
+pepyatka_server_repo: https://github.com/pepyatka/pepyatka-server.git
 pepyatka_version: development
 pepyatka_home_dir: /opt/pepyatka

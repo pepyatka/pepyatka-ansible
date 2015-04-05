@@ -24,25 +24,25 @@
   tags:
     - pepyatka
 
-- name: Clone pepyatka-server
-  local_action: git repo="{{ pepyatka_server_repo }}" update=yes dest=pepyatka-server version="{{ pepyatka_version }}"
-  tags:
-    - pepyatka
+- name: Ensure git is installed
+  apt: name=git state=present
 
 - name: Deploy pepyatka-server
-  synchronize:
-    src: pepyatka-server
-    dest: "{{ pepyatka_home_dir }}/"
-    recursive: yes
-    mode: push
-    delete: yes
-    rsync_opts: --no-motd,--exclude=.git
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  git:
+    repo: "{{ pepyatka_server_repo }}"
+    update: yes
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server"
+    version: "{{ pepyatka_version }}"
   notify:
     - restart pepyatka
   tags:
     - pepyatka
 
 - name: Fix server name in development.js
+  su: yes
+  su_user: "{{ pepyatka_user }}"
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "http://localhost:3333"
@@ -53,17 +53,9 @@
     - pepyatka
 
 - name: Install pepyatka-server dependencies
+  su: yes
+  su_user: "{{ pepyatka_user }}"
   npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
-  tags:
-    - pepyatka
-
-- name: Fix pepyatka-server permissions
-  file:
-    path: "{{ pepyatka_home_dir }}/pepyatka-server"
-    owner: "{{ pepyatka_user }}"
-    group: "{{ pepyatka_group }}"
-    state: directory
-    recurse: yes
   tags:
     - pepyatka
 
