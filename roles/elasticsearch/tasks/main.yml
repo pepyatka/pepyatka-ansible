@@ -15,7 +15,7 @@
   tags:
     - elasticsearch
 
-- name: Ensure elasticsearch service is started and enabled
+- name: Start and enable elasticsearch service
   service: name=elasticsearch state=started enabled=yes
   tags:
     - elasticsearch

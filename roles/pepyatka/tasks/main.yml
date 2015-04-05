@@ -89,8 +89,14 @@
 - name: Start pepyatka-server
   su: yes
   su_user: "{{ pepyatka_user }}"
+  environment:
+    NODE_ENV: development
   command: chdir="{{ pepyatka_home_dir }}" pm2 start pepyatka-server/index.js -i 0 --name pepyatka
   when: "pm2_list.stdout.find('pepyatka') == -1"
   tags:
     - pepyatka
 
+- name: Ensure pepyatka is up and running
+  wait_for: host=localhost port=3000 timeout=30 state=started
+  tags:
+    - nginx

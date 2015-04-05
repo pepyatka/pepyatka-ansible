@@ -122,7 +122,13 @@
     - pepyatka
     - nginx
 
-- name: Ensure nginx is running and enabled
+- name: Start and enable nginx
   service: name=nginx state=running enabled=yes
   tags:
     - nginx
+
+- name: Ensure nginx is up and running
+  wait_for: host=localhost port=443 timeout=30 state=started
+  tags:
+    - nginx
+
