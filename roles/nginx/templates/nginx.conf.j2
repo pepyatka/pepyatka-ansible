@@ -2,8 +2,8 @@
 #   * Official English Documentation: http://nginx.org/en/docs/
 #   * Official Russian Documentation: http://nginx.org/ru/docs/
 
-user  nginx;
-worker_processes  1;
+user  {{ www_user }};
+worker_processes  {{ ansible_processor_vcpus }};
 
 error_log  /var/log/nginx/error.log;
 #error_log  /var/log/nginx/error.log  notice;
@@ -36,7 +36,7 @@ http {
     index   index.html index.htm;
 
     upstream app_pepyatka {
-      server 127.0.0.1:3000;
+      server {{ app_private_ip }}:{{ app_port }};
     }
 
     server {
@@ -46,7 +46,7 @@ http {
     }
 
     server {
-      listen 443;
+      listen 0.0.0.0:443;
       server_name {{ inventory_hostname }};
       access_log /var/log/nginx/pepyatka.log;
 
@@ -64,37 +64,38 @@ http {
       ssl_certificate_key /etc/nginx/ssl/api.pepyatka.key;
 
 
-      location ~ ^/(images/|img/|javascript/|js/|css/|stylesheets/|flash/|media/|static/|files/\|robots.txt|humans.txt|favicon.ico) {
-      root /var/www/pepyatka/public;
-      access_log off;
-      expires max;
-    }
+      location / {
+        root /var/www/pepyatka-html/public;
+        access_log off;
+        expires max;
+      }
 
-    # disable logging for some `common` files
-    # Disable logging for favicon
-    location = /favicon.ico {
+      # disable logging for some `common` files
+      # Disable logging for favicon
+      location = /favicon.ico {
         log_not_found off;
         access_log off;
-    }
+      }
 
-    # Disable logging for robots.txt
-    location = /robots.txt {
+      # Disable logging for robots.txt
+      location = /robots.txt {
         allow all;
         log_not_found off;
         access_log off;
-    }
+      }
 
-    location ~ ^/(v1/|v2/) {
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
+      location ~ ^/(v1/|v2/) {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
 
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header Host $http_host;
-      proxy_set_header X-NginX-Proxy true;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
 
-      proxy_pass http://app_pepyatka/;
-      proxy_redirect off;
-    }
+        proxy_pass http://app_pepyatka;
+        proxy_redirect off;
+      }
+   }
 }

@@ -1,8 +1,9 @@
 ---
-- name: restart sshd
-  service: name=sshd state=restarted
+- name: restart ssh daemon
+  service: "name={{ security_sshd_name }} state=restarted"
 
 - name: set SELinux permissions
   shell: restorecon -v /etc/ssh/ssh*_config; restorecon -rv /root/.ssh
   ignore_errors: True
   changed_when: False
+  when: ansible_os_family == 'RedHat'

@@ -1,30 +1,26 @@
 ---
 
-- name: Download Oracle JDK RPM
-  command: 'wget -q --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" "{{ jdk_download_url }}" -O "{{ jdk_download_path }}/{{ jdk_rpm_name }}"'
-  args:
-    creates: "{{ jdk_download_path }}/{{ jdk_rpm_name }}"
+- include: packages-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+  tags:
+    - elasticsearch
 
-- name: Install Oracle JDK
-  yum: name="{{ jdk_download_path }}/{{ jdk_rpm_name }}" state=present
-
-- name: Deploy elasticsearch-1.4.repo
-  copy: src=elasticsearch-1.4.repo dest=/etc/yum.repos.d/
-
-- name: Download and install the Public Signing Key for elasticsearch
-  command: rpm --import https://packages.elasticsearch.org/GPG-KEY-elasticsearch
-
-- name: Install elasticsearch
-  yum: name=elasticsearch state=present
-
-- name: Ensure elasticsearch service is started and enabled
-  service: name=elasticsearch state=started enabled=yes
-
-- name: install python-pip package
-  yum: pkg=python-pip state=installed
+- include: packages-Debian.yml
+  when: ansible_os_family == 'Debian'
+  tags:
+    - elasticsearch
 
 - name: Install httplib2 for python
   pip: name=httplib2 state=present
+  tags:
+    - elasticsearch
+
+- name: Start and enable elasticsearch service
+  service: name=elasticsearch state=started enabled=yes
+  tags:
+    - elasticsearch
 
 - name: Ensure elasticsearch is up and running
-  uri: url=http://localhost:9200/
+  wait_for: host=localhost port=9200 timeout=30 state=started
+  tags:
+    - elasticsearch

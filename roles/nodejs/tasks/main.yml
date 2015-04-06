@@ -1,8 +1,20 @@
 ---
 
-- name: Install NodeJS packages
-  yum: name={{ item }} state=present
-  with_items:
+- fail: msg="NodeJS is only supported for Ubuntu"
+  when: ansible_distribution != 'Ubuntu'
+
+- name: Add apt key for the nodesource repository
+  apt_key: url="https://deb.nodesource.com/gpgkey/nodesource.gpg.key" state=present
+  tags:
     - nodejs
-    - npm
+
+- name: Add the nodesource apt repository
+  apt_repository: repo="deb https://deb.nodesource.com/node trusty main" state=present
+  tags:
+    - nodejs
+
+- name: Install NodeJS packages
+  apt: name=nodejs state=present
+  tags:
+    - nodejs
 

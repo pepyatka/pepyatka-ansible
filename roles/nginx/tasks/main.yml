@@ -1,31 +1,93 @@
 ---
 # file: nginx/tasks/main.yml
 
-- name: install nginx
-  yum: pkg=nginx state=present
+- fail: msg="Nginx role is only supported for Ubuntu"
+  when: ansible_distribution != 'Ubuntu'
+
+- name: Ensure /var/www/pepyatka
+  file:
+    path: /var/www/pepyatka
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Ensure git is installed
+  apt: name=git state=present
+
+- name: Deploy pepyatka-html
+  git:
+    repo: "{{ pepyatka_html_repo }}"
+    update: yes
+    dest: /var/www/pepyatka-html
+    version: "{{ pepyatka_version }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fix server name in public/js/config.js
+  replace:
+    dest: /var/www/pepyatka-html/public/js/config.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fix server name in public/js/app/adapters/ApplicationAdapter.js
+  replace:
+    dest: /var/www/pepyatka-html/public/js/app/adapters/ApplicationAdapter.js
+    regexp: "http://localhost:3000"
+    replace: "https://{{ inventory_hostname }}"
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Install jake
+  npm: name=jake global=yes state=latest
+  tags:
+    - pepyatka
+
+- name: Install pepyatka-html dependencies
+  npm: path=/var/www/pepyatka-html
+  tags:
+    - pepyatka
+
+- name: Compile css
+  command: chdir=/var/www/pepyatka-html jake themes
+
+- name: Compile js
+  command: chdir=/var/www/pepyatka-html jake compile
+
+- name: Copy main.js
+  command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/js/main.js
+
+- name: Copy config.js
+  command: cp /var/www/pepyatka-html/dist/config.js /var/www/pepyatka-html/public/js/config.js
+
+- name: Copy app/main.js
+  command: cp /var/www/pepyatka-html/dist/app/main.js /var/www/pepyatka-html/public/js/app/main.js
+
+- name: Fix pepyatka-html permissions
+  file:
+    path: /var/www/pepyatka-html
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+    state: directory
+    recurse: yes
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Add nginx apt repository
+  apt_repository: repo='ppa:nginx/stable' state=present
   tags:
     - nginx
 
-- name: Install ca-certificates
-  yum: name=ca-certificates state=present
-  tags:
-    - nginx
-
-- name: Enable the dynamic CA configuration feature
-  command: update-ca-trust enable
-  tags:
-    - nginx
-
-- name: Deploy server root certificate
-  copy:
-    content="{{ server_root_cert }}"
-    dest=/etc/pki/ca-trust/source/anchors/pepyatkaCA.crt
-  when: server_root_cert is defined
-  tags:
-    - nginx
-
-- name: Update ca-trust
-  command: update-ca-trust extract
+- name: Install nginx
+  apt: name=nginx state=present update_cache=true
   tags:
     - nginx
 
@@ -38,6 +100,7 @@
   copy:
     content="{{ server_cert }}"
     dest=/etc/nginx/ssl/api.pepyatka.crt
+    mode=0600
   when: server_cert is defined
   tags:
     - nginx
@@ -46,6 +109,7 @@
   copy:
     content="{{ server_cert_key }}"
     dest=/etc/nginx/ssl/api.pepyatka.key
+    mode=0600
   when: server_cert_key is defined
   tags:
     - nginx
@@ -56,7 +120,16 @@
   tags:
     - nginx
 
-- name: Ensure nginx is running and enabled
-  service: name=nginx state=running enabled=yes
+- name: Start and enable nginx
+  service: name=nginx state=started enabled=yes
   tags:
     - nginx
+
+- name: Reload nginx config
+  service: name=nginx state=reloaded
+
+- name: Ensure nginx is up and running
+  wait_for: host=localhost port=443 timeout=30 state=started
+  tags:
+    - nginx
+

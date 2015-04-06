@@ -1,41 +1,44 @@
 ---
 
+- fail: msg="Pepyatka server is only supported for Ubuntu"
+  when: ansible_distribution != 'Ubuntu'
+
+- name: Add the myway apt repository
+  apt_repository: repo="ppa:dhor/myway" state=present
+  tags:
+    - graphicsmagick
+    - pepyatka
+
+- name: Install GraphicsMagick
+  apt: name=graphicsmagick state=present update-cache=yes
+  tags:
+    - graphicsmagick
+    - pepyatka
+
 - name: Create pepyatka user
   user:
     name: "{{ pepyatka_user }}"
     home: "{{ pepyatka_home_dir }}"
     createhome: yes
     system: yes
+  tags:
+    - pepyatka
 
-- name: Clone pepyatka-server
-  local_action: git repo="{{ pepyatka_server_repo }}" update=yes dest=pepyatka-server version="{{ pepyatka_version }}"
+- name: Ensure git is installed
+  apt: name=git state=present
 
 - name: Deploy pepyatka-server
-  synchronize:
-    src: pepyatka-server
-    dest: "{{ pepyatka_home_dir }}/"
-    recursive: yes
-    mode: push
-    delete: yes
-    rsync_opts: --no-motd,--exclude=.git
-  notify:
-    - restart pepyatka
-
-- name: Fix pepyatka-server permissions
-  file:
-    path: "{{ pepyatka_home_dir }}/pepyatka-server"
-    owner: "{{ pepyatka_user }}"
-    group: "{{ pepyatka_group }}"
-    state: directory
-    recurse: yes
-
-- name: Install pepyatka-server dependencies
   su: yes
   su_user: "{{ pepyatka_user }}"
-  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
-
-- name: Install forever
-  npm: name=forever global=yes state=latest
+  git:
+    repo: "{{ pepyatka_server_repo }}"
+    update: yes
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server"
+    version: "{{ pepyatka_version }}"
+  notify:
+    - restart pepyatka
+  tags:
+    - pepyatka
 
 - name: Fix server name in development.js
   su: yes
@@ -43,67 +46,49 @@
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "http://localhost:3333"
-    replace: "https://{{ inventory_hostname }}"
+    replace: "https://{{ fe_hostname }}"
   notify:
     - restart pepyatka
+  tags:
+    - pepyatka
 
-- name: Check list of Node.js apps running
-  command: forever list
-  register: forever_list
+- name: Install pepyatka-server dependencies
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
+  tags:
+    - pepyatka
+
+- name: Install pm2
+  npm: name=pm2 global=yes state=latest
+  tags:
+    - pepyatka
+
+- name: Init pm2
+  command: "pm2 startup ubuntu -u {{ pepyatka_user }}"
+  tags:
+    - pepyatka
+
+- name: Get list of Node.js apps running
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  command: pm2 list
+  register: pm2_list
   changed_when: false
+  tags:
+    - pepyatka
 
 - name: Start pepyatka-server
   su: yes
   su_user: "{{ pepyatka_user }}"
   environment:
     NODE_ENV: development
-  command: chdir="{{ pepyatka_home_dir }}" forever start pepyatka-server/index.js
-  when: "forever_list.stdout.find('pepyatka-server/index.js') == -1"
+  command: chdir="{{ pepyatka_home_dir }}" pm2 start pepyatka-server/index.js -i 0 --name pepyatka
+  when: "pm2_list.stdout.find('pepyatka') == -1"
+  tags:
+    - pepyatka
 
-- name: Clone pepyatka-client
-  local_action: git repo="{{ pepyatka_client_repo }}" update=yes dest=pepyatka-client version="{{ pepyatka_version }}"
-
-- name: Ensure /var/www/pepyatka
-  file:
-    path: /var/www/pepyatka
-    state: directory
-    owner: "{{ pepyatka_user }}"
-    group: nginx
-
-- name: Deploy pepyatka-client
-  synchronize:
-    src: pepyatka-client
-    dest: /var/www/
-    recursive: yes
-    mode: push
-    delete: yes
-    rsync_opts: --no-motd,--exclude=.git
-
-- name: Fix pepyatka-client permissions
-  file:
-    path: /var/www/pepyatka-client
-    owner: "{{ pepyatka_user }}"
-    group: nginx
-    state: directory
-    recurse: yes
-
-- name: Fix server name in public/js/config.js
-  su: yes
-  su_user: "{{ pepyatka_user }}"
-  replace:
-    dest: /var/www/pepyatka-client/public/js/config.js
-    regexp: "http://localhost:3000"
-    replace: "https://{{ inventory_hostname }}"
-
-- name: Fix server name in public/js/app/adapters/ApplicationAdapter.js
-  su: yes
-  su_user: "{{ pepyatka_user }}"
-  replace:
-    dest: /var/www/pepyatka-client/public/js/app/adapters/ApplicationAdapter.js
-    regexp: "http://localhost:3000"
-    replace: "https://{{ inventory_hostname }}"
-
-- name: Install pepyatka-client dependencies
-  su: yes
-  su_user: "{{ pepyatka_user }}"
-  npm: path=/var/www/pepyatka-client
+- name: Ensure pepyatka is up and running
+  wait_for: host=localhost port=3000 timeout=30 state=started
+  tags:
+    - nginx

@@ -1,7 +1,4 @@
 ---
 - hosts: pepyatka
   roles:
-    - graphicsmagick
-    - nodejs
     - pepyatka
-    - nginx

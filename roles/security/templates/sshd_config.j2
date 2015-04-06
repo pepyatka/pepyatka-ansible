@@ -24,7 +24,7 @@ UsePrivilegeSeparation yes
 Ciphers {{ ssh_ciphers }}
 {% endif %}
 
-{% if ssh_max_auth_tries %}
+{% if ssh_max_auth_tries is defined %}
 # Maximum authentication tries
 MaxAuthTries {{ ssh_max_auth_tries }}
 {% endif %}
