@@ -125,6 +125,9 @@
   tags:
     - nginx
 
+- name: Reload nginx config
+  service: name=nginx state=reloaded
+
 - name: Ensure nginx is up and running
   wait_for: host=localhost port=443 timeout=30 state=started
   tags:
