@@ -62,7 +62,10 @@
   command: chdir=/var/www/pepyatka-html jake compile
 
 - name: Copy main.js
-  command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/main.js
+  command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/js/main.js
+
+- name: Copy config.js
+  command: cp /var/www/pepyatka-html/dist/config.js /var/www/pepyatka-html/public/js/config.js
 
 - name: Copy app/main.js
   command: cp /var/www/pepyatka-html/dist/app/main.js /var/www/pepyatka-html/public/js/app/main.js
