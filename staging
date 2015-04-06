@@ -4,7 +4,7 @@ pepyatka.com
 [staging:vars]
 ansible_ssh_user=root
 fe_hostname=pepyatka.com
-app_private_ip=127.0.0.0
+app_private_ip=localhost
 app_port=3000
 
 [redis]

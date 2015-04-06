@@ -46,7 +46,7 @@
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "http://localhost:3333"
-    replace: "https://{{ fe_hostname }}"
+    replace: "{{ fe_hostname }}"
   notify:
     - restart pepyatka
   tags:
