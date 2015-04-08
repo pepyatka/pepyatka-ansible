@@ -105,15 +105,6 @@
   tags:
     - nginx
 
-- name: Deploy server certificate key
-  copy:
-    content="{{ server_cert_key }}"
-    dest=/etc/nginx/ssl/api.pepyatka.key
-    mode=0600
-  when: server_cert_key is defined
-  tags:
-    - nginx
-
 - name: Deploy nginx config
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
   notify: reload nginx
