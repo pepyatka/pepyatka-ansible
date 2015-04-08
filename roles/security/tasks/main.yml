@@ -8,6 +8,9 @@
 - include: packages-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
+- include: packages-Debian.yml
+  when: ansible_os_family == 'Debian'
+
 - name: Deploy sshd configuration
   template: src=sshd_config.j2 dest={{ security_ssh_config_path }} owner=root group=root mode=0600
   notify:

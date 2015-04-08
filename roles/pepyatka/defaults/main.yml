@@ -5,3 +5,6 @@ pepyatka_group: pepyatka
 pepyatka_server_repo: https://github.com/pepyatka/pepyatka-server.git
 pepyatka_version: development
 pepyatka_home_dir: /opt/pepyatka
+
+pepyatka_redis_host: "127.0.0.1"
+pepyatka_redis_port: 6379

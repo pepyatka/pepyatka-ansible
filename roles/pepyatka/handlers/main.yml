@@ -1,6 +1,6 @@
 ---
 
 - name: restart pepyatka
-  su: yes
-  su_user: "{{ pepyatka_user }}"
+  sudo: yes
+  sudo_user: "{{ pepyatka_user }}"
   command: chdir="{{ pepyatka_home_dir }}" pm2 restart pepyatka
