@@ -21,8 +21,7 @@
     home: "{{ pepyatka_home_dir }}"
     createhome: yes
     system: yes
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Ensure git is installed
   apt: name=git state=present
@@ -37,8 +36,7 @@
     version: "{{ pepyatka_version }}"
   notify:
     - restart pepyatka
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Fix server name in development.js
   su: yes
@@ -47,27 +45,52 @@
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "http://localhost:3333"
     replace: "{{ fe_hostname }}"
-  notify:
-    - restart pepyatka
-  tags:
-    - pepyatka
+  notify: restart pepyatka
+  tags: pepyatka
+
+- name: Patch redis connect options in config/database.js
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/database.js"
+    regexp: "database = redis.createClient()"
+    replace: "database = redis.createClient({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, {})"
+  notify: restart pepyatka
+  tags: pepyatka
+
+- name: Patch redis connect options in pubsub.js - 1
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
+    regexp: "redis()"
+    replace: "redis({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, {})"
+  notify: restart pepyatka
+  tags: pepyatka
+
+- name: Patch redis connect options in pubsub.js - 2
+  su: yes
+  su_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
+    regexp: "redis({ detect_buffers: true })"
+    replace: "redis({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, { detect_buffers: true })"
+  notify: restart pepyatka
+  tags: pepyatka
 
 - name: Install pepyatka-server dependencies
   su: yes
   su_user: "{{ pepyatka_user }}"
   npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Install pm2
   npm: name=pm2 global=yes state=latest
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Init pm2
   command: "pm2 startup ubuntu -u {{ pepyatka_user }}"
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Get list of Node.js apps running
   su: yes
@@ -75,8 +98,7 @@
   command: pm2 list
   register: pm2_list
   changed_when: false
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Start pepyatka-server
   su: yes
@@ -85,8 +107,7 @@
     NODE_ENV: development
   command: chdir="{{ pepyatka_home_dir }}" pm2 start pepyatka-server/index.js -i 0 --name pepyatka
   when: "pm2_list.stdout.find('pepyatka') == -1"
-  tags:
-    - pepyatka
+  tags: pepyatka
 
 - name: Ensure pepyatka is up and running
   wait_for: host=localhost port=3000 timeout=30 state=started
