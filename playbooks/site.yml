@@ -1,6 +1,6 @@
 ---
 - include: security.yml
-- include: elasticsearch.yml
-- include: redis.yml
+#- include: elasticsearch.yml
+#- include: redis.yml
 - include: pepyatka.yml
 - include: nginx.yml

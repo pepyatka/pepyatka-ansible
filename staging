@@ -1,20 +1,15 @@
-[staging]
-pepyatka.com
+[pepyatka]
+staging.freefeed.net
 
-[staging:vars]
+[nginx]
+staging.freefeed.net
+
+[redis]
+staging.freefeed.net
+
+[all:vars]
 ansible_ssh_user=root
-fe_hostname=pepyatka.com
+fe_hostname=staging.freefeed.net
 app_private_ip=localhost
 app_port=3000
 
-[redis]
-pepyatka.com
-
-[elasticsearch]
-pepyatka.com
-
-[pepyatka]
-pepyatka.com
-
-[nginx]
-pepyatka.com

@@ -1,0 +1,13 @@
+[pepyatka]
+micropeppa.freefeed.net
+
+[nginx]
+micropeppa.freefeed.net
+
+[all:vars]
+ansible_ssh_user=ubuntu
+fe_hostname=micropeppa.freefeed.net
+app_private_ip=localhost
+app_port=3000
+pepyatka_redis_host=pepyatka-micro.gfaoo9.0001.euw1.cache.amazonaws.com
+
