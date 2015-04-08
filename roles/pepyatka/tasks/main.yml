@@ -53,8 +53,8 @@
   su_user: "{{ pepyatka_user }}"
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/database.js"
-    regexp: "database = redis.createClient()"
-    replace: "database = redis.createClient({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, {})"
+    regexp: 'database = redis\.createClient\(\)'
+    replace: 'database = redis.createClient({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", {})'
   notify: restart pepyatka
   tags: pepyatka
 
@@ -63,8 +63,8 @@
   su_user: "{{ pepyatka_user }}"
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
-    regexp: "redis()"
-    replace: "redis({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, {})"
+    regexp: 'redis\(\)'
+    replace: 'redis({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", {})'
   notify: restart pepyatka
   tags: pepyatka
 
@@ -73,8 +73,8 @@
   su_user: "{{ pepyatka_user }}"
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
-    regexp: "redis({ detect_buffers: true })"
-    replace: "redis({{ pepyatka_redis_port }}, {{ pepyatka_redis_host }}, { detect_buffers: true })"
+    regexp: 'redis\({ detect_buffers: true }\)'
+    replace: 'redis({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", { detect_buffers: true })'
   notify: restart pepyatka
   tags: pepyatka
 
