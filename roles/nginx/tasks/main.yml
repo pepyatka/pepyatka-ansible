@@ -36,15 +36,6 @@
     - pepyatka
     - nginx
 
-- name: Fix server name in public/js/app/adapters/ApplicationAdapter.js
-  replace:
-    dest: /var/www/pepyatka-html/public/js/app/adapters/ApplicationAdapter.js
-    regexp: "http://localhost:3000"
-    replace: "https://{{ inventory_hostname }}"
-  tags:
-    - pepyatka
-    - nginx
-
 - name: Install jake
   npm: name=jake global=yes state=latest
   tags:
