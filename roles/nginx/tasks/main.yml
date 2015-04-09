@@ -58,9 +58,6 @@
 - name: Copy config.js
   command: cp /var/www/pepyatka-html/dist/config.js /var/www/pepyatka-html/public/js/config.js
 
-- name: Copy app/main.js
-  command: cp /var/www/pepyatka-html/dist/app/main.js /var/www/pepyatka-html/public/js/app/main.js
-
 - name: Fix pepyatka-html permissions
   file:
     path: /var/www/pepyatka-html
