@@ -34,6 +34,7 @@
     update: yes
     dest: "{{ pepyatka_home_dir }}/pepyatka-server"
     version: "{{ pepyatka_version }}"
+    force: yes
   notify:
     - restart pepyatka
   tags: pepyatka

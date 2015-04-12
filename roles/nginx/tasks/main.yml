@@ -23,6 +23,7 @@
     update: yes
     dest: /var/www/pepyatka-html
     version: "{{ pepyatka_version }}"
+    force: yes
   tags:
     - pepyatka
     - nginx
