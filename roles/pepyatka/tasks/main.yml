@@ -39,13 +39,23 @@
     - restart pepyatka
   tags: pepyatka
 
-- name: Fix server name in development.js
+- name: Fix origin in development.js
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "http://localhost:3333"
     replace: "{{ fe_hostname }}"
+  notify: restart pepyatka
+  tags: pepyatka
+
+- name: Fix urlDir in development.js
+  sudo: yes
+  sudo_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+    regexp: "http://localhost:3000"
+    replace: "https://{{ fe_hostname }}"
   notify: restart pepyatka
   tags: pepyatka
 
