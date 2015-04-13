@@ -47,17 +47,30 @@
   tags:
     - pepyatka
 
+- name: Clean up dist
+  file: path=/var/www/pepyatka-html/dist state=absent
+  tags:
+    - pepyatka
+
 - name: Compile css
   command: chdir=/var/www/pepyatka-html jake themes
+  tags:
+    - pepyatka
 
 - name: Compile js
   command: chdir=/var/www/pepyatka-html jake compile
+  tags:
+    - pepyatka
 
 - name: Copy main.js
   command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/js/main.js
+  tags:
+    - pepyatka
 
 - name: Copy config.js
   command: cp /var/www/pepyatka-html/dist/config.js /var/www/pepyatka-html/public/js/config.js
+  tags:
+    - pepyatka
 
 - name: Fix pepyatka-html permissions
   file:
