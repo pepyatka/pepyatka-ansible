@@ -28,19 +28,6 @@
     - pepyatka
     - nginx
 
-- name: Create directories for attachments and thumbnails
-  file:
-    path: "/var/www/pepyatka-html/public/attachments/{{ item }}"
-    state: directory
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
-  with_items:
-    - original
-    - thumbnails
-  tags:
-    - pepyatka
-    - nginx
-
 - name: Fix server name in public/js/config.js
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
@@ -117,6 +104,16 @@
     dest=/etc/nginx/ssl/api.pepyatka.crt
     mode=0600
   when: server_cert is defined
+  tags:
+    - nginx
+
+- name: Ensure nginx has access to pepyatka files
+  file:
+    path: "{{ pepyatka_files_dir }}"
+    group: "{{ www_group }}"
+    state: directory
+    recurse: yes
+    mode: 0775
   tags:
     - nginx
 

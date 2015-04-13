@@ -39,6 +39,17 @@
     - restart pepyatka
   tags: pepyatka
 
+- name: Create directories for attachments and thumbnails
+  file:
+    path: "{{ pepyatka_files_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ pepyatka_user }}"
+  with_items:
+    - original
+    - thumbnails
+  tags:
+    - pepyatka
+
 - name: Fix origin in development.js
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
@@ -65,7 +76,7 @@
   replace:
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
     regexp: "./public/files"
-    replace: "/var/www/pepyatka-html/public/attachments"
+    replace: "{{ pepyatka_files_dir }}"
   notify: restart pepyatka
   tags: pepyatka
 
