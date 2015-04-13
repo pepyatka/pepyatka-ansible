@@ -59,6 +59,16 @@
   notify: restart pepyatka
   tags: pepyatka
 
+- name: Fix fsDir in development.js
+  sudo: yes
+  sudo_user: "{{ pepyatka_user }}"
+  replace:
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
+    regexp: "./public/files"
+    replace: "/var/www/pepyatka-html/public/attachments"
+  notify: restart pepyatka
+  tags: pepyatka
+
 - name: Patch redis connect options in config/database.js
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"

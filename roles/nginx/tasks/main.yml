@@ -28,6 +28,19 @@
     - pepyatka
     - nginx
 
+- name: Create directories for attachments and thumbnails
+  file:
+    path: "/var/www/pepyatka-html/public/attachments/{{ item }}"
+    state: directory
+    owner: "{{ www_user }}"
+    group: "{{ www_group }}"
+  with_items:
+    - original
+    - thumbnails
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Fix server name in public/js/config.js
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
