@@ -63,6 +63,12 @@ http {
       ssl_certificate /etc/nginx/ssl/api.pepyatka.crt;
       ssl_certificate_key /etc/nginx/ssl/api.pepyatka.key;
 
+      location /attachments/ {
+        root {{ pepyatka_files_dir }};
+        expires max;
+        rewrite ^/attachments/(.*)$ /$1 break;
+      }
+
       location / {
         root /var/www/pepyatka-html/public;
         access_log off;

@@ -107,6 +107,16 @@
   tags:
     - nginx
 
+- name: Ensure nginx has access to pepyatka files
+  file:
+    path: "{{ pepyatka_files_dir }}"
+    group: "{{ www_group }}"
+    state: directory
+    recurse: yes
+    mode: 0775
+  tags:
+    - nginx
+
 - name: Deploy nginx config
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
   notify: reload nginx
