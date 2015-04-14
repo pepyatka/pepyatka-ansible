@@ -36,18 +36,24 @@ http {
     index   index.html index.htm;
 
     upstream app_pepyatka {
-      server {{ app_private_ip }}:{{ app_port }};
+      server {{ pepyatka_server_host }}:{{ pepyatka_server_port }};
     }
 
+{% if pepyatka_use_ssl %}
     server {
       listen         80;
-      server_name    {{ inventory_hostname }};
+      server_name    {{ pepyatka_hostname }};
       return         301 https://$server_name$request_uri;
     }
+{% endif %}
 
     server {
+{% if pepyatka_use_ssl %}
       listen 0.0.0.0:443;
-      server_name {{ inventory_hostname }};
+{% else %}
+      listen 80;
+{% endif %}
+      server_name {{ pepyatka_hostname }};
       access_log /var/log/nginx/pepyatka.log;
 
       gzip on;
@@ -59,9 +65,11 @@ http {
 
       gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
 
+{% if pepyatka_use_ssl %}
       ssl on;
       ssl_certificate /etc/nginx/ssl/api.pepyatka.crt;
       ssl_certificate_key /etc/nginx/ssl/api.pepyatka.key;
+{% endif %}
 
       location /attachments/ {
         root {{ pepyatka_files_dir }};

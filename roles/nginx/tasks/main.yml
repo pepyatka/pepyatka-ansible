@@ -22,7 +22,7 @@
     repo: "{{ pepyatka_html_repo }}"
     update: yes
     dest: /var/www/pepyatka-html
-    version: "{{ pepyatka_version }}"
+    version: "{{ pepyatka_html_version }}"
     force: yes
   tags:
     - pepyatka
@@ -32,7 +32,7 @@
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
     regexp: "http://localhost:3000"
-    replace: "https://{{ inventory_hostname }}"
+    replace: "{{ pepyatka_use_ssl | ternary('https','http') }}://{{ pepyatka_hostname }}"
   tags:
     - pepyatka
     - nginx
@@ -132,7 +132,7 @@
   service: name=nginx state=reloaded
 
 - name: Ensure nginx is up and running
-  wait_for: host=localhost port=443 timeout=30 state=started
+  wait_for: host=localhost port={{ pepyatka_use_ssl | ternary(443, 80) }} timeout=30 state=started
   tags:
     - nginx
 

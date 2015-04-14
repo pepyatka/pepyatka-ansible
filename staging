@@ -9,7 +9,7 @@ staging.freefeed.net
 
 [all:vars]
 ansible_ssh_user=root
-fe_hostname=staging.freefeed.net
-app_private_ip=localhost
-app_port=3000
+pepyatka_hostname=staging.freefeed.net
+pepyatka_server_repo=https://github.com/id/pepyatka-server.git
+pepyatka_server_version=add-config-for-redis
 
