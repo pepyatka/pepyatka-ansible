@@ -3,8 +3,14 @@
 pepyatka_user: pepyatka
 pepyatka_group: pepyatka
 pepyatka_server_repo: https://github.com/pepyatka/pepyatka-server.git
-pepyatka_version: development
+pepyatka_server_version: development
+pepyatka_server_port: 3000
 pepyatka_home_dir: /opt/pepyatka
-
-pepyatka_redis_host: "127.0.0.1"
+pepyatka_files_dir: /var/pepyatka-files
+pepyatka_node_env: development
+pepyatka_secret: 'secret'
+pepyatka_redis_host: 'localhost'
 pepyatka_redis_port: 6379
+pepyatka_use_ssl: false
+pepyatka_mailer_from_name: 'Pepyatka'
+pepyatka_mailer_from_email: 'mail@pepyatka.com'

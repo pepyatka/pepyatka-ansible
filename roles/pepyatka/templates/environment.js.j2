@@ -1,0 +1,50 @@
+"use strict";
+
+var nodemailer = require('nodemailer')
+var transport = {
+  name: 'minimal',
+  version: '0.1.0',
+  send: function(mail, callback) {
+    var input = mail.message.createReadStream();
+    input.pipe(process.stdout);
+    input.on('end', function() {
+      callback(null, true)
+    })
+  }
+}
+
+exports.getConfig = function() {
+  var config = {
+    port: {{ pepyatka_server_port }},
+    database: 2,
+
+    secret: '{{ pepyatka_secret }}',
+
+    origin: '{{ pepyatka_hostname }}',
+  }
+
+  config.attachments = {
+    // Make sure that all directories here have a trailing slash
+    urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/attachments/original/',
+    fsDir: '{{ pepyatka_files_dir }}/original/',
+
+    thumbnails: {
+      urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/attachments/thumbnails/',
+      fsDir: '{{ pepyatka_files_dir }}/thumbnails/'
+    }
+  }
+
+  config.mailer = {
+    transport: transport,
+    fromName: '{{ pepyatka_mailer_from_name }}',
+    fromEmail: '{{ pepyatka_mailer_from_email }}',
+    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}'
+  }
+
+  config.redis = {
+    host: '{{ pepyatka_redis_host }}',
+    port: {{ pepyatka_redis_port }}
+  }
+
+  return config
+}

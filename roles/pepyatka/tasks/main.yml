@@ -23,8 +23,13 @@
     system: yes
   tags: pepyatka
 
-- name: Ensure git is installed
-  apt: name=git state=present
+- name: Install required packages
+  apt: name={{ item }} state=present
+  with_items:
+    - git
+    - make
+    - g++
+  tags: pepyatka
 
 - name: Deploy pepyatka-server
   sudo: yes
@@ -33,8 +38,18 @@
     repo: "{{ pepyatka_server_repo }}"
     update: yes
     dest: "{{ pepyatka_home_dir }}/pepyatka-server"
-    version: "{{ pepyatka_version }}"
+    version: "{{ pepyatka_server_version }}"
     force: yes
+  notify:
+    - restart pepyatka
+  tags: pepyatka
+
+- name: Deploy pepaytka config
+  template:
+    src: environment.js.j2
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/{{ pepyatka_node_env }}.js"
+    owner: "{{ pepyatka_user }}"
+    group: "{{ pepyatka_group }}"
   notify:
     - restart pepyatka
   tags: pepyatka
@@ -49,66 +64,6 @@
     - thumbnails
   tags:
     - pepyatka
-
-- name: Fix origin in development.js
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
-    regexp: "http://localhost:3333"
-    replace: "{{ fe_hostname }}"
-  notify: restart pepyatka
-  tags: pepyatka
-
-- name: Fix urlDir in development.js
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
-    regexp: "http://localhost:3000"
-    replace: "https://{{ fe_hostname }}"
-  notify: restart pepyatka
-  tags: pepyatka
-
-- name: Fix fsDir in development.js
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/environments/development.js"
-    regexp: "./public/files"
-    replace: "{{ pepyatka_files_dir }}"
-  notify: restart pepyatka
-  tags: pepyatka
-
-- name: Patch redis connect options in config/database.js
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/config/database.js"
-    regexp: 'database = redis\.createClient\(\)'
-    replace: 'database = redis.createClient({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", {})'
-  notify: restart pepyatka
-  tags: pepyatka
-
-- name: Patch redis connect options in pubsub.js - 1
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
-    regexp: 'redis\(\)'
-    replace: 'redis({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", {})'
-  notify: restart pepyatka
-  tags: pepyatka
-
-- name: Patch redis connect options in pubsub.js - 2
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  replace:
-    dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/pubsub.js"
-    regexp: 'redis\({ detect_buffers: true }\)'
-    replace: 'redis({{ pepyatka_redis_port }}, "{{ pepyatka_redis_host }}", { detect_buffers: true })'
-  notify: restart pepyatka
-  tags: pepyatka
 
 - name: Install pepyatka-server dependencies
   sudo: yes
@@ -135,13 +90,11 @@
 - name: Start pepyatka-server
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
-  environment:
-    NODE_ENV: development
-  command: chdir="{{ pepyatka_home_dir }}" pm2 start --name pepyatka pepyatka-server/index.js
+  command: chdir="{{ pepyatka_home_dir }}" pm2 start --name pepyatka pepyatka-server/index.js NODE_ENV={{ pepyatka_node_env }}
   when: "pm2_list.stdout.find('pepyatka') == -1"
   tags: pepyatka
 
 - name: Ensure pepyatka is up and running
-  wait_for: host=localhost port=3000 timeout=30 state=started
+  wait_for: host=localhost port={{ pepyatka_server_port }} timeout=30 state=started
   tags:
     - nginx

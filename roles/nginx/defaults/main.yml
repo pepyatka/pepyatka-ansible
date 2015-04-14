@@ -1,6 +1,11 @@
 ---
 
 pepyatka_html_repo: https://github.com/pepyatka/pepyatka-html.git
-pepyatka_version: development
+pepyatka_html_version: development
 www_user: www-data
 www_group: www-data
+pepyatka_hostname: localhost
+pepyatka_server_host: localhost
+pepyatka_server_port: 3000
+pepyatka_files_dir: /var/pepyatka-files
+pepyatka_use_ssl: false
