@@ -9,7 +9,7 @@
     - nodejs
 
 - name: Add the nodesource apt repository
-  apt_repository: repo="deb https://deb.nodesource.com/node trusty main" state=present
+  apt_repository: repo="deb https://deb.nodesource.com/node_0.12 trusty main" state=present
   tags:
     - nodejs
 
