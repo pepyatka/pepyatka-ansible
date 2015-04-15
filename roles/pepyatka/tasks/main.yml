@@ -54,6 +54,12 @@
     - restart pepyatka
   tags: pepyatka
 
+- name: Remove development and test environments (pepyatka may fail to start for some reason)
+  file: path={{ pepyatka_home_dir }}/pepyatka-server/config/environments/{{ item }}.js state=absent
+  with_items:
+    - development
+    - test
+
 - name: Create directories for attachments and thumbnails
   file:
     path: "{{ pepyatka_files_dir }}/{{ item }}"
