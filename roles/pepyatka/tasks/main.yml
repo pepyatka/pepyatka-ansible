@@ -36,9 +36,6 @@
   register: pepyatka_server_dir
   tags: pepyatka
 
-- debug: var=pepyatka_server_dir
-  tags: pepyatka
-
 - name: Initial deploy of pepyatka-server
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
@@ -46,6 +43,7 @@
     repo: "{{ pepyatka_server_repo }}"
     dest: "{{ pepyatka_home_dir }}/pepyatka-server"
     version: "{{ pepyatka_server_branch }}"
+  register: pepyatka_server_init
   when: not pepyatka_server_dir.stat.exists
   tags: pepyatka
 
@@ -87,6 +85,8 @@
   with_items:
     - development
     - test
+  when: pepyatka_node_env != "development" and pepyatka_node_env != "test"
+  tags: pepyatka
 
 - name: Deploy pepaytka config
   template:
@@ -112,14 +112,21 @@
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
   npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
+  when: pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed
   tags: pepyatka
 
 - name: Install pm2
   npm: name=pm2 global=yes state=latest
   tags: pepyatka
 
+- name: Check if pm2 startup has been run already
+  stat: path=/etc/init.d/pm2-init.sh
+  register: pm2_init
+  tags: pepyatka
+
 - name: Init pm2
   command: "pm2 startup ubuntu -u {{ pepyatka_user }}"
+  when: not pm2_init.stat.exists
   tags: pepyatka
 
 - name: Get list of pm2 apps running
@@ -137,7 +144,7 @@
   with_items:
     - stop
     - delete
-  when: pm2_list.stdout.find('pepyatka') != -1 and (pepyatka_server.changed or pepyatka_config.changed)
+  when: pm2_list.stdout.find('pepyatka') != -1 and (pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed)
   tags: pepyatka
 
 - name: Get list of pm2 apps running
