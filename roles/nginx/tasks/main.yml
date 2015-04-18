@@ -16,14 +16,57 @@
 
 - name: Ensure git is installed
   apt: name=git state=present
+  tags:
+    - pepyatka
+    - nginx
 
-- name: Deploy pepyatka-html
+- name: Check if pepyatka-html repo already exists
+  stat: path=/var/www/pepyatka-html/.git
+  register: pepyatka_html_dir
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Initial deploy of pepyatka-html
+  git:
+    repo: "{{ pepyatka_html_repo }}"
+    dest: /var/www/pepyatka-html
+    version: "{{ pepyatka_html_branch }}"
+  when: not pepyatka_html_dir.stat.exists
+  register: pepyatka_html_init
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Get pepyatka-html local version
+  command: chdir=/var/www/pepyatka-html git rev-parse HEAD
+  register: pepyatka_html_local_version
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Fetch pepyatka-html remote
+  command: chdir=/var/www/pepyatka-html git fetch origin
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Get pepyatka-html version on remote
+  command: chdir=/var/www/pepyatka-html git rev-parse origin/{{ pepyatka_html_branch }}
+  register: pepyatka_html_remote_version
+  tags:
+    - pepyatka
+    - nginx
+
+- name: Update pepyatka-html
   git:
     repo: "{{ pepyatka_html_repo }}"
     update: yes
     dest: /var/www/pepyatka-html
-    version: "{{ pepyatka_html_version }}"
+    version: "{{ pepyatka_html_branch }}"
     force: yes
+  register: pepyatka_html
+  when: pepyatka_html_local_version.stdout != pepyatka_html_remote_version.stdout
   tags:
     - pepyatka
     - nginx
@@ -33,6 +76,7 @@
     dest: /var/www/pepyatka-html/public/js/config.js
     regexp: "http://localhost:3000"
     replace: "{{ pepyatka_use_ssl | ternary('https','http') }}://{{ pepyatka_hostname }}"
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
     - nginx
@@ -41,36 +85,49 @@
   npm: name=jake global=yes state=latest
   tags:
     - pepyatka
+    - nginx
 
 - name: Install pepyatka-html dependencies
   npm: path=/var/www/pepyatka-html
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Clean up dist
   file: path=/var/www/pepyatka-html/dist state=absent
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Compile css
   command: chdir=/var/www/pepyatka-html jake themes
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Compile js
   command: chdir=/var/www/pepyatka-html jake compile
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Copy main.js
   command: cp /var/www/pepyatka-html/dist/main.js /var/www/pepyatka-html/public/js/main.js
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Copy config.js
   command: cp /var/www/pepyatka-html/dist/config.js /var/www/pepyatka-html/public/js/config.js
+  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
+    - nginx
 
 - name: Fix pepyatka-html permissions
   file:
@@ -86,16 +143,19 @@
 - name: Add nginx apt repository
   apt_repository: repo='ppa:nginx/stable' state=present
   tags:
+    - pepyatka
     - nginx
 
 - name: Install nginx
   apt: name=nginx state=present update_cache=true
   tags:
+    - pepyatka
     - nginx
 
 - name: Ensure /etc/nginx/ssl
   file: path=/etc/nginx/ssl state=directory
   tags:
+    - pepyatka
     - nginx
 
 - name: Deploy server certificate
@@ -105,6 +165,7 @@
     mode=0600
   when: server_cert is defined
   tags:
+    - pepyatka
     - nginx
 
 - name: Ensure nginx has access to pepyatka files
@@ -115,24 +176,30 @@
     recurse: yes
     mode: 0775
   tags:
+    - pepyatka
     - nginx
 
 - name: Deploy nginx config
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
-  notify: reload nginx
   tags:
+    - pepyatka
     - nginx
 
 - name: Start and enable nginx
   service: name=nginx state=started enabled=yes
   tags:
+    - pepyatka
     - nginx
 
 - name: Reload nginx config
   service: name=nginx state=reloaded
+  tags:
+    - pepyatka
+    - nginx
 
 - name: Ensure nginx is up and running
   wait_for: host=localhost port={{ pepyatka_use_ssl | ternary(443, 80) }} timeout=30 state=started
   tags:
+    - pepyatka
     - nginx
 
