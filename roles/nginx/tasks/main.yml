@@ -81,6 +81,16 @@
     - pepyatka
     - nginx
 
+- name: Update version in public/index.html
+  replace:
+    dest: /var/www/pepyatka-html/public/index.html
+    regexp: "v=.*"
+    replace: "v={{ pepyatka_html_remote_version.stdout }}\""
+  when: pepyatka_html.changed
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Install jake
   npm: name=jake global=yes state=latest
   tags:
