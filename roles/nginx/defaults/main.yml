@@ -1,7 +1,7 @@
 ---
 
 pepyatka_html_repo: https://github.com/pepyatka/pepyatka-html.git
-pepyatka_html_version: development
+pepyatka_html_branch: development
 www_user: www-data
 www_group: www-data
 pepyatka_hostname: localhost

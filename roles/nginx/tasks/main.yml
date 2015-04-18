@@ -22,7 +22,7 @@
     repo: "{{ pepyatka_html_repo }}"
     update: yes
     dest: /var/www/pepyatka-html
-    version: "{{ pepyatka_html_version }}"
+    version: "{{ pepyatka_html_branch }}"
     force: yes
   tags:
     - pepyatka
