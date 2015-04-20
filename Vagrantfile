@@ -21,5 +21,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       pepyatka_html_repo: "https://github.com/pepyatka/pepyatka-html.git",
       pepyatka_html_branch: "development"
     }
+    ansible.raw_arguments = ENV['ANSIBLE_ARGS']
   end
 end
