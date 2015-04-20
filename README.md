@@ -1,20 +1,9 @@
 # Provisioning and deploying pepyatka-server
 ## Installing ansible
-### CentOS
 
-    sudo yum install ansible
+    sudo pip install ansible
 
-### Debian/Ubuntu
-
-    sudo apt-get install software-properties-common
-    sudo apt-add-repository ppa:ansible/ansible
-    sudo apt-get update
-    sudo apt-get install ansible
-
-### Mac OSX
-
-    brew update
-    brew install ansible
+More options: http://docs.ansible.com/intro_installation.html#installing-the-control-machine
 
 ### Configuring
 I recommend to add the following alias in your .bashrc:
