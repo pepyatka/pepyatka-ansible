@@ -74,9 +74,8 @@
 - name: Fix server name in public/js/config.js
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
-    regexp: "http://localhost:3000"
-    replace: "{{ pepyatka_use_ssl | ternary('https','http') }}://{{ pepyatka_hostname }}"
-  when: pepyatka_html.changed or pepyatka_html_init.changed
+    regexp: "host:.*"
+    replace: "host: \"{{ pepyatka_use_ssl | ternary('https','http') }}://{{ pepyatka_hostname }}\","
   tags:
     - pepyatka
     - nginx

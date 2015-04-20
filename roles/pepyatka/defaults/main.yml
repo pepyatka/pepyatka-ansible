@@ -5,6 +5,7 @@ pepyatka_group: pepyatka
 pepyatka_server_repo: https://github.com/pepyatka/pepyatka-server.git
 pepyatka_server_branch: development
 pepyatka_server_port: 3000
+pepyatka_hostname: localhost
 pepyatka_home_dir: /opt/pepyatka
 pepyatka_files_dir: /var/pepyatka-files
 pepyatka_node_env: development
