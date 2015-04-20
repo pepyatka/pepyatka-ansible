@@ -3,7 +3,8 @@
 
     sudo pip install ansible
 
-More options: http://docs.ansible.com/intro_installation.html#installing-the-control-machine
+Minimal required ansible version is 1.9.
+More installation options: http://docs.ansible.com/intro_installation.html#installing-the-control-machine
 
 ### Configuring
 I recommend to add the following alias in your .bashrc:
