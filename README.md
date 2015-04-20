@@ -15,16 +15,16 @@ Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
 
-    play -i staging playbooks/site.yml -s
+    play -i prod playbooks/site.yml -s
 
 ## Ad-hoc commands
 Check if all servers are up:
 
-    ansible -i hosts all -m ping
+    ansible -i prod all -m ping
 
 Check status of the redis service:
 
-    ansible -i hosts redis -a "systemctl status redis"
+    ansible -i prod pepyatka -a "service nginx status"
 
 ## Development environment with vagrant
 It's very easy to get a live-like VM with the help of vagrant and ansible.
