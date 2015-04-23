@@ -8,6 +8,7 @@ pepyatka_server_port: 3000
 pepyatka_hostname: localhost
 pepyatka_home_dir: /opt/pepyatka
 pepyatka_files_dir: /var/pepyatka-files
+pepyatka_file_size_limit: '10mb'
 pepyatka_node_env: development
 pepyatka_secret: 'secret'
 pepyatka_redis_host: 'localhost'
