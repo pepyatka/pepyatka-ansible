@@ -55,7 +55,7 @@ http {
       listen 80;
 {% endif %}
       server_name {{ pepyatka_hostname }};
-      access_log /var/log/nginx/pepyatka.log;
+      access_log /var/log/nginx/pepyatka.log main;
 
       gzip on;
       gzip_comp_level 6;
@@ -72,16 +72,11 @@ http {
       ssl_certificate_key /etc/nginx/ssl/api.pepyatka.key;
 {% endif %}
 
-      location /attachments/ {
-        root {{ pepyatka_files_dir }};
-        expires max;
-        rewrite ^/attachments/(.*)$ /$1 break;
-      }
-
       location / {
         root /var/www/pepyatka-html/public;
         access_log off;
         expires max;
+        try_files $uri $uri/ /index.html?/$request_uri;
       }
 
       # disable logging for some `common` files
@@ -96,6 +91,12 @@ http {
         allow all;
         log_not_found off;
         access_log off;
+      }
+
+      location /attachments/ {
+        root {{ pepyatka_files_dir }};
+        expires max;
+        rewrite ^/attachments/(.*)$ /$1 break;
       }
 
       location ~ ^/(v1/|v2/|socket.io/) {
