@@ -4,16 +4,6 @@
 - fail: msg="Nginx role is only supported for Ubuntu"
   when: ansible_distribution != 'Ubuntu'
 
-- name: Ensure /var/www/pepyatka
-  file:
-    path: /var/www/pepyatka
-    state: directory
-    owner: "{{ www_user }}"
-    group: "{{ www_group }}"
-  tags:
-    - pepyatka
-    - nginx
-
 - name: Ensure git is installed
   apt: name=git state=present
   tags:

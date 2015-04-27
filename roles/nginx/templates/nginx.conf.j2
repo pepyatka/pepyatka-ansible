@@ -99,6 +99,12 @@ http {
         rewrite ^/attachments/(.*)$ /$1 break;
       }
 
+      location /files/profilePictures/ {
+        root {{ pepyatka_files_dir }};
+        expires max;
+        rewrite ^/files/(.*)$ /$1 break;
+      }
+
       location ~ ^/(v1/|v2/|socket.io/) {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

@@ -97,7 +97,7 @@
   register: pepyatka_config
   tags: pepyatka
 
-- name: Create directories for attachments and thumbnails
+- name: Create directories for attachments, thumbnails and profile pictures
   file:
     path: "{{ pepyatka_files_dir }}/{{ item }}"
     state: directory
@@ -105,6 +105,7 @@
   with_items:
     - original
     - thumbnails
+    - profilePictures
   tags:
     - pepyatka
 
