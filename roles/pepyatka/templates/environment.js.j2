@@ -35,6 +35,11 @@ exports.getConfig = function() {
     }
   }
 
+  config.profilePictures = {
+    urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/files/profilePictures/',
+    fsDir: '{{ pepyatka_files_dir }}/profilePictures/'
+  }
+
   config.mailer = {
     transport: transport,
     fromName: '{{ pepyatka_mailer_from_name }}',
