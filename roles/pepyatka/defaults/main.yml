@@ -14,5 +14,10 @@ pepyatka_secret: 'secret'
 pepyatka_redis_host: 'localhost'
 pepyatka_redis_port: 6379
 pepyatka_use_ssl: false
+pepyatka_mailer_smtp_enabled: False
+pepyatka_mailer_smtp_host: localhost
+pepyatka_mailer_smtp_port: 25
+pepyatka_mailer_smtp_user: 'username'
+pepyatka_mailer_smtp_pass: 'password'
 pepyatka_mailer_from_name: 'Pepyatka'
 pepyatka_mailer_from_email: 'mail@pepyatka.com'

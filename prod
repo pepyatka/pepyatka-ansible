@@ -15,5 +15,9 @@ pepyatka_node_env=production
 pepyatka_use_ssl=true
 pepyatka_server_host=localhost
 pepyatka_server_port=3000
+pepyatka_mailer_smtp_enabled=True
 pepyatka_mailer_from_name=FreeFeed.net
 pepyatka_mailer_from_email=freefeed.net@gmail.com
+
+[prod_smtp]
+micropeppa.freefeed.net
