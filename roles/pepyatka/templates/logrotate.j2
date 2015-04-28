@@ -1,0 +1,14 @@
+{{ pepyatka_home_dir }}/pepyatka-server/log/*.log {{ pepyatka_home_dir }}/.pm2/logs/*.log {
+  su {{ pepyatka_user }} {{ pepyatka_group }}
+  size 1M
+  rotate 7
+  missingok
+  notifempty
+  compress
+  sharedscripts
+  dateext
+  dateformat %Y-%m-%d
+  postrotate
+    pm2 reloadLogs
+  endscript
+}
