@@ -6,6 +6,7 @@ var smtpTransport = require('nodemailer-smtp-transport')
 var transport = nodemailer.createTransport(smtpTransport({
     host: '{{ pepyatka_mailer_smtp_host }}',
     port: {{ pepyatka_mailer_smtp_port }},
+    secure: {{ pepyatka_mailer_smtp_secure }},
     auth: {
         user: '{{ pepyatka_mailer_smtp_user }}',
         pass: '{{ pepyatka_mailer_smtp_pass }}'
@@ -33,6 +34,8 @@ exports.getConfig = function() {
     secret: '{{ pepyatka_secret }}',
 
     origin: '{{ pepyatka_hostname }}',
+
+    serviceName: 'FreeFeed'
   }
 
   config.attachments = {
@@ -56,7 +59,10 @@ exports.getConfig = function() {
     transport: transport,
     fromName: '{{ pepyatka_mailer_from_name }}',
     fromEmail: '{{ pepyatka_mailer_from_email }}',
-    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}'
+    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}',
+    resetPasswordTemplate: '{{ pepyatka_home_dir }}/pepyatka-server/app/scripts/views/mailer/resetPassword.ejs',
+    resetPasswordMailSubject: 'FreeFeed password reset',
+    mailFooter: 'Thank you,\nFreeFeed dev team'
   }
 
   config.redis = {
