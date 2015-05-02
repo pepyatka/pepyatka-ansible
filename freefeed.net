@@ -21,5 +21,3 @@ pepyatka_mailer_from_name=FreeFeed.net
 pepyatka_mailer_from_email=freefeed.net@gmail.com
 pepyatka_mailer_reset_password_mail_subject='FreeFeed.net password reset'
 
-[prod_smtp]
-freefeed.net
