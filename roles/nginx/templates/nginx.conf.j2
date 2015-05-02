@@ -57,6 +57,12 @@ http {
       server_name {{ pepyatka_hostname }};
       access_log /var/log/nginx/pepyatka.log main;
 
+{% if pepyatka_frontend_scheme == "https" %}
+      if ($http_x_forwarded_proto = 'http') {
+         return 301 https://$server_name$request_uri;
+      }
+{% endif %}
+
       gzip on;
       gzip_comp_level 6;
       gzip_vary on;
