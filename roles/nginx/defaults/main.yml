@@ -7,6 +7,6 @@ www_group: www-data
 pepyatka_hostname: localhost
 pepyatka_server_host: localhost
 pepyatka_server_port: 3000
+pepyatka_frontend_scheme: http
 pepyatka_files_dir: /var/pepyatka-files
-pepyatka_use_ssl: false
 nginx_client_max_body_size: '10M'

@@ -14,7 +14,7 @@ pepyatka_node_env: development
 pepyatka_secret: 'secret'
 pepyatka_redis_host: 'localhost'
 pepyatka_redis_port: 6379
-pepyatka_use_ssl: false
+pepyatka_frontend_scheme: http
 pepyatka_mailer_smtp_enabled: False
 pepyatka_mailer_smtp_secure: 'false'
 pepyatka_mailer_smtp_host: localhost
