@@ -6,6 +6,7 @@ micropeppa.freefeed.net
 
 [all:vars]
 ansible_ssh_user=ubuntu
+pepyatka_service_name=FreeFeed
 pepyatka_hostname=micropeppa.freefeed.net
 pepyatka_redis_host=pepyatka-micro.gfaoo9.0001.euw1.cache.amazonaws.com
 pepyatka_files_dir=/var/pepyatka-files
@@ -15,5 +16,7 @@ pepyatka_node_env=production
 pepyatka_use_ssl=true
 pepyatka_server_host=localhost
 pepyatka_server_port=3000
+pepyatka_mailer_smtp_enabled=True
 pepyatka_mailer_from_name=FreeFeed.net
 pepyatka_mailer_from_email=freefeed.net@gmail.com
+

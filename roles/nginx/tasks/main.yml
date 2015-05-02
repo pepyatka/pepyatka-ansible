@@ -80,6 +80,16 @@
     - pepyatka
     - nginx
 
+- name: Update service name in public/index.html
+  replace:
+    dest: /var/www/pepyatka-html/public/index.html
+    regexp: "Pepyatka"
+    replace: "{{ pepyatka_service_name }}"
+  when: pepyatka_html.changed
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Install jake
   npm: name=jake global=yes state=latest
   tags:

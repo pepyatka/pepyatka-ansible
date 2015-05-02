@@ -97,6 +97,15 @@
   register: pepyatka_config
   tags: pepyatka
 
+- name: Deploy reset password mail template
+  template:
+    src: resetPassword.ejs.j2
+    dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/scripts/views/mailer/resetPassword.ejs"
+    owner: "{{ pepyatka_user }}"
+    group: "{{ pepyatka_group }}"
+  register: pepyatka_config
+  tags: pepyatka
+
 - name: Create directories for attachments, thumbnails and profile pictures
   file:
     path: "{{ pepyatka_files_dir }}/{{ item }}"

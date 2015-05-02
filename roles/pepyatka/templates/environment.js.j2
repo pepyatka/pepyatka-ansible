@@ -1,6 +1,9 @@
 "use strict";
 
 var nodemailer = require('nodemailer')
+{% if pepyatka_mailer_smtp_enabled %}
+var transport = require('nodemailer-smtp-transport')
+{% else %}
 var transport = {
   name: 'minimal',
   version: '0.1.0',
@@ -12,6 +15,7 @@ var transport = {
     })
   }
 }
+{% endif %}
 
 exports.getConfig = function() {
   var config = {
@@ -21,6 +25,9 @@ exports.getConfig = function() {
     secret: '{{ pepyatka_secret }}',
 
     origin: '{{ pepyatka_hostname }}',
+
+    serviceName: 'FreeFeed',
+    appRoot: '{{ pepyatka_home_dir}}/pepyatka-server'
   }
 
   config.attachments = {
@@ -44,7 +51,19 @@ exports.getConfig = function() {
     transport: transport,
     fromName: '{{ pepyatka_mailer_from_name }}',
     fromEmail: '{{ pepyatka_mailer_from_email }}',
-    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}'
+    resetPasswordMailSubject: '{{ pepyatka_service_name }} password reset',
+    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}',
+    options: {
+{% if pepyatka_mailer_smtp_enabled %}
+      host: '{{ pepyatka_mailer_smtp_host }}',
+      port: {{ pepyatka_mailer_smtp_port }},
+      secure: {{ pepyatka_mailer_smtp_secure }},
+      auth: {
+          user: '{{ pepyatka_mailer_smtp_user }}',
+          pass: '{{ pepyatka_mailer_smtp_pass }}'
+      }
+{% endif %}
+    }
   }
 
   config.redis = {
