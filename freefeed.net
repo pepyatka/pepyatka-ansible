@@ -8,7 +8,7 @@ freefeed.net
 ansible_ssh_user=ubuntu
 pepyatka_service_name=FreeFeed
 pepyatka_hostname=freefeed.net
-pepyatka_redis_host=pepyatka-micro.gfaoo9.0001.euw1.cache.amazonaws.com
+pepyatka_redis_host=pepyatka-prod-1.gfaoo9.ng.0001.euw1.cache.amazonaws.com
 pepyatka_files_dir=/var/pepyatka-files
 pepyatka_file_size_limit='50mb'
 nginx_client_max_body_size='50M'
