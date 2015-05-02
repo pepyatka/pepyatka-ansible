@@ -51,7 +51,7 @@ exports.getConfig = function() {
     transport: transport,
     fromName: '{{ pepyatka_mailer_from_name }}',
     fromEmail: '{{ pepyatka_mailer_from_email }}',
-    resetPasswordMailSubject: '{{ pepyatka_mailer_from_email }}',
+    resetPasswordMailSubject: '{{ pepyatka_service_name }} password reset',
     host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}',
     options: {
 {% if pepyatka_mailer_smtp_enabled %}
