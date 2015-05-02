@@ -65,7 +65,7 @@
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
     regexp: "host:.*"
-    replace: "host: \"{{ pepyatka_use_ssl | ternary('https','http') }}://{{ pepyatka_hostname }}\","
+    replace: "host: \"{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}\","
   tags:
     - pepyatka
     - nginx
@@ -177,6 +177,16 @@
     - pepyatka
     - nginx
 
+- name: Deploy server certificate key
+  copy:
+    content="{{ server_cert_key }}"
+    dest=/etc/nginx/ssl/api.pepyatka.key
+    mode=0600
+  when: server_cert_key is defined
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Ensure nginx has access to pepyatka files
   file:
     path: "{{ pepyatka_files_dir }}"
@@ -207,7 +217,7 @@
     - nginx
 
 - name: Ensure nginx is up and running
-  wait_for: host=localhost port={{ pepyatka_use_ssl | ternary(443, 80) }} timeout=30 state=started
+  wait_for: host=localhost port={{ server_cert is defined | ternary(443, 80) }} timeout=30 state=started
   tags:
     - pepyatka
     - nginx

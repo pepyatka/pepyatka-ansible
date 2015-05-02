@@ -32,18 +32,18 @@ exports.getConfig = function() {
 
   config.attachments = {
     // Make sure that all directories here have a trailing slash
-    urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/attachments/original/',
+    urlDir: '{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname}}/attachments/original/',
     fsDir: '{{ pepyatka_files_dir }}/original/',
     fileSizeLimit: '{{ pepyatka_file_size_limit }}',
 
     thumbnails: {
-      urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/attachments/thumbnails/',
+      urlDir: '{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname}}/attachments/thumbnails/',
       fsDir: '{{ pepyatka_files_dir }}/thumbnails/'
     }
   }
 
   config.profilePictures = {
-    urlDir: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}/files/profilePictures/',
+    urlDir: '{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname}}/files/profilePictures/',
     fsDir: '{{ pepyatka_files_dir }}/profilePictures/'
   }
 
@@ -52,7 +52,7 @@ exports.getConfig = function() {
     fromName: '{{ pepyatka_mailer_from_name }}',
     fromEmail: '{{ pepyatka_mailer_from_email }}',
     resetPasswordMailSubject: '{{ pepyatka_service_name }} password reset',
-    host: '{{ pepyatka_use_ssl | ternary("https","http") }}://{{ pepyatka_hostname}}',
+    host: '{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname}}',
     options: {
 {% if pepyatka_mailer_smtp_enabled %}
       host: '{{ pepyatka_mailer_smtp_host }}',
