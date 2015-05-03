@@ -8,6 +8,8 @@ freefeed.net
 ansible_ssh_user=ubuntu
 pepyatka_service_name=FreeFeed
 pepyatka_hostname=freefeed.net
+pepyatka_html_repo=https://github.com/FreeFeed/pepyatka-html.git
+pepyatka_html_branch=whitelabel
 pepyatka_redis_host=pepyatka-prod-1.gfaoo9.ng.0001.euw1.cache.amazonaws.com
 pepyatka_files_dir=/var/pepyatka-files
 pepyatka_file_size_limit='50mb'
