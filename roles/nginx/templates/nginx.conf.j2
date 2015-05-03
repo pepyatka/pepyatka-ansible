@@ -8,7 +8,6 @@ worker_processes  {{ ansible_processor_vcpus }};
 error_log  /var/log/nginx/error.log;
 #error_log  /var/log/nginx/error.log  notice;
 #error_log  /var/log/nginx/error.log  info;
-
 pid        /run/nginx.pid;
 
 events {
@@ -23,6 +22,10 @@ http {
     log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
+
+    log_format elb_log '$proxy_protocol_addr - $remote_user [$time_local] '
+                       '"$request" $status $body_bytes_sent "$http_referer" '
+                       '"$http_user_agent"';
 
     access_log  /var/log/nginx/access.log  main;
 
@@ -42,7 +45,6 @@ http {
 
 {% if server_cert is defined %}
     server {
-      server_name    _;
       listen         80;
       server_name    {{ pepyatka_hostname }};
       return         301 https://$server_name$request_uri;
@@ -51,14 +53,14 @@ http {
 
     server {
 {% if server_cert is defined %}
-      listen 443 ssl spdy;
-      listen [::]:443 ssl spdy;
+      listen 443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
+      listen [::]:443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
       add_header Strict-Transport-Security "max-age=31536000";
 {% else %}
       listen 80;
 {% endif %}
       server_name {{ pepyatka_hostname }};
-      access_log /var/log/nginx/pepyatka.log main;
+      access_log /var/log/nginx/pepyatka.log {{ nginx_behind_elb | ternary('elb_log', 'main') }};
 
 {% if pepyatka_frontend_scheme == "https" and server_cert is not defined %}
       if ($http_x_forwarded_proto = 'http') {

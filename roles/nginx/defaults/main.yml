@@ -10,3 +10,5 @@ pepyatka_server_port: 3000
 pepyatka_frontend_scheme: http
 pepyatka_files_dir: /var/pepyatka-files
 nginx_client_max_body_size: '10M'
+nginx_behind_elb: False
+
