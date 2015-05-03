@@ -22,5 +22,6 @@ pepyatka_mailer_smtp_enabled=True
 pepyatka_mailer_from_name=FreeFeed.net
 pepyatka_mailer_from_email=freefeed.net@gmail.com
 pepyatka_accept_hashed_passwords_only='true'
+pepyatka_ga_account='UA-62517081-1'
 nginx_restrict_users_ip=136.243.23.88
 nginx_behind_elb=True

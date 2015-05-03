@@ -90,6 +90,15 @@
     - pepyatka
     - nginx
 
+- name: Update ga account in public/index.html
+  replace:
+    dest: /var/www/pepyatka-html/public/index.html
+    regexp: "UA.+'"
+    replace: "{{ pepyatka_ga_account }}'"
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Install jake
   npm: name=jake global=yes state=latest
   tags:
