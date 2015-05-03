@@ -56,6 +56,7 @@ http {
       listen 443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
       listen [::]:443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
       add_header Strict-Transport-Security "max-age=31536000";
+      ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 {% else %}
       listen 80;
 {% endif %}
