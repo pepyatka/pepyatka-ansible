@@ -27,7 +27,8 @@ exports.getConfig = function() {
     origin: '{{ pepyatka_hostname }}',
 
     serviceName: 'FreeFeed',
-    appRoot: '{{ pepyatka_home_dir}}/pepyatka-server'
+    appRoot: '{{ pepyatka_home_dir}}/pepyatka-server',
+    acceptHashedPasswordsOnly: {{ pepyatka_accept_hashed_passwords_only }}
   }
 
   config.attachments = {
