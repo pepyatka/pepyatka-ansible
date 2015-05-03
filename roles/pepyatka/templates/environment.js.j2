@@ -26,7 +26,7 @@ exports.getConfig = function() {
 
     origin: '{{ pepyatka_hostname }}',
 
-    serviceName: 'FreeFeed',
+    serviceName: '{{ pepyatka_service_name }}',
     appRoot: '{{ pepyatka_home_dir}}/pepyatka-server',
     acceptHashedPasswordsOnly: {{ pepyatka_accept_hashed_passwords_only }}
   }
