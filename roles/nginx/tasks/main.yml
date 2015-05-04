@@ -170,6 +170,12 @@
     - pepyatka
     - nginx
 
+- name: Deploy custom logrotate config for nginx
+  copy: src=logrotate_d_nginx dest=/etc/logrotate.d/nginx
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Ensure /etc/nginx/ssl
   file: path=/etc/nginx/ssl state=directory
   tags:
