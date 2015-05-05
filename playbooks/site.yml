@@ -4,3 +4,19 @@
 - include: redis.yml
 - include: pepyatka.yml
 - include: nginx.yml
+
+- post_tasks:
+  hosts: all
+  connection: local
+  sudo: False
+  vars:
+    slack_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+  tasks:
+    - name: Send notification to Slack
+      uri:
+        method: POST
+        url: "{{ slack_notification_url }}"
+        HEADER_Content-Type: "application/x-www-form-urlencoded"
+        body: "{{ slack_data }}"
+      when: slack_notification_url is defined
+
