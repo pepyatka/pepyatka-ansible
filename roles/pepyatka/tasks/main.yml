@@ -80,6 +80,14 @@
   when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
   tags: pepyatka
 
+- name: Save pepyatka-server version locally
+  fetch:
+    src={{ pepyatka_home_dir }}/pepyatka-server/.git/refs/heads/{{ pepyatka_server_branch }}
+    dest=pepyatka-server-version/{{ inventory_hostname }}
+    flat=yes
+  when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
+  tags: pepyatka
+
 - name: Remove development and test environments (pepyatka may fail to start for some reason)
   file: path={{ pepyatka_home_dir }}/pepyatka-server/config/environments/{{ item }}.js state=absent
   with_items:

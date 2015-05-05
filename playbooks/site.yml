@@ -1,4 +1,18 @@
 ---
+
+- pre_tasks:
+  hosts: all
+  connection: local
+  sudo: False
+  tasks:
+    - name: Delete saved pepyatka-server and pepyatka-html versions
+      file: path={{ item }} state=absent
+      with_items:
+        - pepyatka-server-version
+        - pepyatka-html-version
+      tags:
+        - versions
+
 - include: security.yml
 - include: elasticsearch.yml
 - include: redis.yml
@@ -11,12 +25,56 @@
   sudo: False
   vars:
     slack_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+
   tasks:
-    - name: Send notification to Slack
+
+    - name: Check if we have new pepyatka-server version
+      shell: echo "Updated pepyatka-server on $(basename {{ item }}) to {{ lookup('file', item) }}"
+      with_fileglob:
+        - pepyatka-server-version/*
+      register: pepyatka_server_versions_for_slack
+      tags:
+        - versions
+
+    - name: Check if we have new pepyatka-html version
+      shell: echo "Updated pepyatka-html on $(basename {{ item }}) to {{ lookup('file', item) }}"
+      with_fileglob:
+        - pepyatka-html-version/*
+      register: pepyatka_html_versions_for_slack
+      tags:
+        - versions
+
+    - name: Notify Slack about new pepyatka-server version
+      uri:
+        method: POST
+        url: "{{ slack_notification_url }}"
+        HEADER_Content-Type: "application/x-www-form-urlencoded"
+        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+      with_items: pepyatka_server_versions_for_slack.results
+      when: slack_notification_url is defined and pepyatka_server_versions_for_slack.changed
+      tags:
+        - slack
+
+    - name: Notify Slack about new pepyatka-html version
+      uri:
+        method: POST
+        url: "{{ slack_notification_url }}"
+        HEADER_Content-Type: "application/x-www-form-urlencoded"
+        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+      with_items: pepyatka_html_versions_for_slack.results
+      when: slack_notification_url is defined and pepyatka_html_versions_for_slack.changed
+      tags:
+        - slack
+
+    - name: Send a generic notification to Slack
       uri:
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
         body: "{{ slack_data }}"
       when: slack_notification_url is defined
+            and not pepyatka_server_versions_for_slack.changed
+            and not pepyatka_html_versions_for_slack.changed
+      tags:
+        - slack
 

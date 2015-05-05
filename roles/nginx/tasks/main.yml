@@ -61,6 +61,14 @@
     - pepyatka
     - nginx
 
+- name: Save pepyatka-html version locally
+  fetch:
+    src=/var/www/pepyatka-html/.git/refs/heads/{{ pepyatka_html_branch }}
+    dest=pepyatka-html-version/{{ inventory_hostname }}
+    flat=yes
+  when: pepyatka_html_local_version.stdout != pepyatka_html_remote_version.stdout
+  tags: pepyatka
+
 - name: Fix server name in public/js/config.js
   replace:
     dest: /var/www/pepyatka-html/public/js/config.js
