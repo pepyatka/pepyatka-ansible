@@ -178,3 +178,18 @@
   wait_for: host=localhost port={{ pepyatka_server_port }} timeout=30 state=started
   tags:
     - nginx
+
+- name: Save pm2 config
+  sudo: yes
+  sudo_user: "{{ pepyatka_user }}"
+  command: pm2 save
+  when: pm2_list_2.stdout.find('pepyatka') == -1
+  tags: pepyatka
+
+- name: Configure logrotate for pm2 logs
+  template:
+    src=logrotate.j2
+    dest=/etc/logrotate.d/pepyatka-pm2
+  tags:
+    - pepyatka
+    - logrotate
