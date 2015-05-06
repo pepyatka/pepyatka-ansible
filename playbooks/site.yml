@@ -3,7 +3,10 @@
 - pre_tasks:
   hosts: all
   connection: local
+  gather_facts: False
   sudo: False
+  vars:
+    slack_pre_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Starting deploy to <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
   tasks:
     - name: Delete saved pepyatka-server and pepyatka-html versions
       file: path={{ item }} state=absent
@@ -12,6 +15,15 @@
         - pepyatka-html-version
       tags:
         - versions
+    - name: Send a notification to Slack
+      uri:
+        method: POST
+        url: "{{ slack_notification_url }}"
+        HEADER_Content-Type: "application/x-www-form-urlencoded"
+        body: "{{ slack_pre_data }}"
+      when: slack_notification_url is defined
+      tags:
+        - slack
 
 - include: security.yml
 - include: elasticsearch.yml
@@ -22,9 +34,10 @@
 - post_tasks:
   hosts: all
   connection: local
+  gather_facts: False
   sudo: False
   vars:
-    slack_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+    slack_post_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
 
   tasks:
 
@@ -71,7 +84,7 @@
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
-        body: "{{ slack_data }}"
+        body: "{{ slack_post_data }}"
       when: slack_notification_url is defined
             and not pepyatka_server_versions_for_slack.changed
             and not pepyatka_html_versions_for_slack.changed
