@@ -61,10 +61,15 @@
     - pepyatka
     - nginx
 
-- name: Save pepyatka-html version locally
+- name: Save changelog in a file
+  shell: echo "{{ pepyatka_html_local_version.stdout }}...{{ pepyatka_html_remote_version.stdout }}" > /tmp/pepyatka-html-changelog
+  when: pepyatka_html_local_version.stdout != pepyatka_html_remote_version.stdout
+  tags: pepyatka
+
+- name: Fetch pepyatka-html changelog
   fetch:
-    src=/var/www/pepyatka-html/.git/refs/heads/{{ pepyatka_html_branch }}
-    dest=pepyatka-html-version/{{ inventory_hostname }}
+    src=/tmp/pepyatka-html-changelog
+    dest=pepyatka-html-changelog/{{ inventory_hostname }}
     flat=yes
   when: pepyatka_html_local_version.stdout != pepyatka_html_remote_version.stdout
   tags: pepyatka

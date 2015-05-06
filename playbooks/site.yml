@@ -6,15 +6,16 @@
   gather_facts: False
   sudo: False
   vars:
-    slack_pre_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Starting deploy to <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+    slack_pre_data: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "Starting deploy to <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
   tasks:
-    - name: Delete saved pepyatka-server and pepyatka-html versions
+    - name: Delete saved pepyatka-server and pepyatka-html changelogs
       file: path={{ item }} state=absent
       with_items:
-        - pepyatka-server-version
-        - pepyatka-html-version
+        - pepyatka-server-changelog
+        - pepyatka-html-changelog
+      when: slack_notification_url is defined
       tags:
-        - versions
+        - changelog
     - name: Send a notification to Slack
       uri:
         method: POST
@@ -37,45 +38,45 @@
   gather_facts: False
   sudo: False
   vars:
-    slack_post_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
-
+    slack_post_data: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
   tasks:
-
-    - name: Check if we have new pepyatka-server version
-      shell: echo "Updated pepyatka-server on $(basename {{ item }}) to {{ lookup('file', item) }}"
+    - name: Generate pepyatka-server changelog message for Slack
+      shell: echo "Updated pepyatka-server on {{ item | basename }}. <{{ pepyatka_server_repo | replace('.git', '')}}/compare/{{ lookup('file', item) }}|Changelog>"
       with_fileglob:
-        - pepyatka-server-version/*
-      register: pepyatka_server_versions_for_slack
+        - pepyatka-server-changelog/*
+      register: pepyatka_server_changelog
+      when: slack_notification_url is defined
       tags:
-        - versions
+        - changelog
 
-    - name: Check if we have new pepyatka-html version
-      shell: echo "Updated pepyatka-html on $(basename {{ item }}) to {{ lookup('file', item) }}"
+    - name: Generate pepyatka-html changelog message for Slack
+      shell: echo "Updated pepyatka-html on {{ item | basename }}. <{{ pepyatka_html_repo | replace('.git', '')}}/compare/{{ lookup('file', item) }}|Changelog>"
       with_fileglob:
-        - pepyatka-html-version/*
-      register: pepyatka_html_versions_for_slack
+        - pepyatka-html-changelog/*
+      register: pepyatka_html_changelog
+      when: slack_notification_url is defined
       tags:
-        - versions
+        - changelog
 
-    - name: Notify Slack about new pepyatka-server version
+    - name: Notify Slack about pepyatka-server changes
       uri:
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
-        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
-      with_items: pepyatka_server_versions_for_slack.results
-      when: slack_notification_url is defined and pepyatka_server_versions_for_slack.changed
+        body: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+      with_items: pepyatka_server_changelog.results
+      when: slack_notification_url is defined and pepyatka_server_changelog.changed
       tags:
         - slack
 
-    - name: Notify Slack about new pepyatka-html version
+    - name: Notify Slack about pepyatka-html changes
       uri:
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
-        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
-      with_items: pepyatka_html_versions_for_slack.results
-      when: slack_notification_url is defined and pepyatka_html_versions_for_slack.changed
+        body: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+      with_items: pepyatka_html_changelog.results
+      when: slack_notification_url is defined and pepyatka_html_changelog.changed
       tags:
         - slack
 
@@ -86,8 +87,8 @@
         HEADER_Content-Type: "application/x-www-form-urlencoded"
         body: "{{ slack_post_data }}"
       when: slack_notification_url is defined
-            and not pepyatka_server_versions_for_slack.changed
-            and not pepyatka_html_versions_for_slack.changed
+            and not pepyatka_server_changelog.changed
+            and not pepyatka_html_changelog.changed
       tags:
         - slack
 
