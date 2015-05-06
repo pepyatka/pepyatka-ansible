@@ -87,8 +87,8 @@
         HEADER_Content-Type: "application/x-www-form-urlencoded"
         body: "{{ slack_post_data }}"
       when: slack_notification_url is defined
-            and not pepyatka_server_changelog_for_slack.changed
-            and not pepyatka_html_changelog_for_slack.changed
+            and not pepyatka_server_changelog.changed
+            and not pepyatka_html_changelog.changed
       tags:
         - slack
 

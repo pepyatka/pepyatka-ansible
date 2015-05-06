@@ -76,6 +76,7 @@
     dest: "{{ pepyatka_home_dir }}/pepyatka-server"
     version: "{{ pepyatka_server_branch }}"
     force: yes
+  when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
   register: pepyatka_server
   tags: pepyatka
 
