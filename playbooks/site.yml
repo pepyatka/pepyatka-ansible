@@ -6,7 +6,7 @@
   gather_facts: False
   sudo: False
   vars:
-    slack_pre_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Starting deploy to <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+    slack_pre_data: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "Starting deploy to <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
   tasks:
     - name: Delete saved pepyatka-server and pepyatka-html changelogs
       file: path={{ item }} state=absent
@@ -38,7 +38,7 @@
   gather_facts: False
   sudo: False
   vars:
-    slack_post_data: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
+    slack_post_data: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "Successfully deployed <{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname }}|{{ pepyatka_hostname }}>", "icon_emoji": ":ghost:"}'
   tasks:
     - name: Generate pepyatka-server changelog message for Slack
       shell: echo "Updated pepyatka-server on {{ item | basename }}. <{{ pepyatka_server_repo | replace('.git', '')}}/compare/{{ lookup('file', item) }}|Changelog>"
@@ -63,7 +63,7 @@
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
-        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+        body: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
       with_items: pepyatka_server_changelog.results
       when: slack_notification_url is defined and pepyatka_server_changelog.changed
       tags:
@@ -74,7 +74,7 @@
         method: POST
         url: "{{ slack_notification_url }}"
         HEADER_Content-Type: "application/x-www-form-urlencoded"
-        body: 'payload={"channel": "#qa", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
+        body: 'payload={"channel": "#deploy", "username": "ansible deploy", "text": "{{ item.stdout }}", "icon_emoji": ":ghost:"}'
       with_items: pepyatka_html_changelog.results
       when: slack_notification_url is defined and pepyatka_html_changelog.changed
       tags:
