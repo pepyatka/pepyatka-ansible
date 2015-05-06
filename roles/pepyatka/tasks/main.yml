@@ -77,13 +77,17 @@
     version: "{{ pepyatka_server_branch }}"
     force: yes
   register: pepyatka_server
+  tags: pepyatka
+
+- name: Save changelog in a file
+  shell: echo "{{ pepyatka_server_local_version.stdout }}...{{ pepyatka_server_remote_version.stdout }}" > /tmp/pepyatka-server-changelog
   when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
   tags: pepyatka
 
-- name: Save pepyatka-server version locally
+- name: Fetch pepyatka-server changelog
   fetch:
-    src={{ pepyatka_home_dir }}/pepyatka-server/.git/refs/heads/{{ pepyatka_server_branch }}
-    dest=pepyatka-server-version/{{ inventory_hostname }}
+    src=/tmp/pepyatka-server-changelog
+    dest=pepyatka-server-changelog/{{ inventory_hostname }}
     flat=yes
   when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
   tags: pepyatka
