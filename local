@@ -7,4 +7,8 @@ localhost
 [redis]
 localhost
 
-
+[all:vars]
+pepyatka_service_name=<optional branding>
+pepyatka_hostname=<your server ip>
+pepyatka_server_repo=<public link to your fork on github>
+pepyatka_html_repo=<public link to your fork on github>

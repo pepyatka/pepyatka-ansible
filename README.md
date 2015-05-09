@@ -14,18 +14,20 @@ I recommend to add the following alias in your .bashrc:
 Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
-Replace IP addresses in dev inventory file with IP of your server(s), then run:
+Replace placeholders in inventory 'dev' with your data and run:
 
     play -i dev playbooks/site.yml -s
 
-### Provisioning local machine (Ubuntu)
+'-s' flag means "use sudo" and only needed if remote user on your server is anything other than root.
+
+### Provisioning locally
 Install requirements:
 
     apt-get install python-dev gcc
     apt-get install python-pip
     pip install ansible
 
-Clone this repo, replace IP in dev inecntory with localhost and run as root:
+Clone this repo, replace placeholders in inventory 'local' with your data and run as root:
 
     ansible-playbook -i local playbooks/site.yml --connection=local
 
