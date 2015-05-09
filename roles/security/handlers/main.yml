@@ -1,6 +1,6 @@
 ---
 - name: restart ssh daemon
-  service: "name={{ security_sshd_name }} state=restarted"
+  service: name={{ security_sshd_name }} state=restarted
 
 - name: set SELinux permissions
   shell: restorecon -v /etc/ssh/ssh*_config; restorecon -rv /root/.ssh
