@@ -14,17 +14,29 @@ I recommend to add the following alias in your .bashrc:
 Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
+Replace IP addresses in dev inventory file with IP of your server(s), then run:
 
-    play -i prod playbooks/site.yml -s
+    play -i dev playbooks/site.yml -s
+
+### Provisioning local machine (Ubuntu)
+Install requirements:
+
+    apt-get install python-dev gcc
+    apt-get install python-pip
+    pip install ansible
+
+Clone this repo, replace IP in dev inecntory with localhost and run as root:
+
+    ansible-playbook -i local playbooks/site.yml --connection=local
 
 ## Ad-hoc commands
 Check if all servers are up:
 
-    ansible -i prod all -m ping
+    ansible -i dev all -m ping
 
-Check status of the redis service:
+Check status of nginx:
 
-    ansible -i prod pepyatka -a "service nginx status"
+    ansible -i dev nginx -a "service nginx status"
 
 ## Development environment with vagrant
 It's very easy to get a live-like VM with the help of vagrant and ansible.

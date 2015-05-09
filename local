@@ -1,0 +1,10 @@
+[pepyatka]
+localhost
+
+[nginx]
+localhost
+
+[redis]
+localhost
+
+
