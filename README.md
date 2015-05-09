@@ -1,7 +1,9 @@
 # Provisioning and deploying pepyatka-server
 ## Installing ansible
 
-    sudo pip install ansible
+    apt-get install python-dev gcc
+    apt-get install python-pip
+    pip install ansible
 
 Minimal required ansible version is 1.9.
 More installation options: http://docs.ansible.com/intro_installation.html#installing-the-control-machine
@@ -21,13 +23,7 @@ Replace placeholders in inventory 'dev' with your data and run:
 '-s' flag means "use sudo" and only needed if remote user on your server is anything other than root.
 
 ### Provisioning locally
-Install requirements:
-
-    apt-get install python-dev gcc
-    apt-get install python-pip
-    pip install ansible
-
-Clone this repo, replace placeholders in inventory 'local' with your data and run as root:
+Install ansible, clone this repo, replace placeholders in inventory 'local' with your data and run as root:
 
     ansible-playbook -i local playbooks/site.yml --connection=local
 
