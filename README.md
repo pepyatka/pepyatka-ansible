@@ -1,7 +1,9 @@
 # Provisioning and deploying pepyatka-server
 ## Installing ansible
 
-    sudo pip install ansible
+    apt-get install python-dev gcc
+    apt-get install python-pip
+    pip install ansible
 
 Minimal required ansible version is 1.9.
 More installation options: http://docs.ansible.com/intro_installation.html#installing-the-control-machine
@@ -14,17 +16,25 @@ I recommend to add the following alias in your .bashrc:
 Assume play=ansible-playbook down below.
 
 ## Provisioning pepyatka server
+Replace placeholders in inventory 'dev' with your data and run:
 
-    play -i prod playbooks/site.yml -s
+    play -i dev playbooks/site.yml -s
+
+'-s' flag means "use sudo" and only needed if remote user on your server is anything other than root.
+
+### Provisioning locally
+Install ansible, clone this repo, replace placeholders in inventory 'local' with your data and run as root:
+
+    ansible-playbook -i local playbooks/site.yml --connection=local
 
 ## Ad-hoc commands
 Check if all servers are up:
 
-    ansible -i prod all -m ping
+    ansible -i dev all -m ping
 
-Check status of the redis service:
+Check status of nginx:
 
-    ansible -i prod pepyatka -a "service nginx status"
+    ansible -i dev nginx -a "service nginx status"
 
 ## Development environment with vagrant
 It's very easy to get a live-like VM with the help of vagrant and ansible.
