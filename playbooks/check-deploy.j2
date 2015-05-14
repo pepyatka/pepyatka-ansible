@@ -1,30 +1,32 @@
 #!/bin/bash
 
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
 BASE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 cd $BASE_DIR >/dev/null
 SCRIPT_FILE=$(basename ${BASH_SOURCE[0]})
 LOG_FILE={{ pepyatka_deploy_log_dir }}/check-deploy.log
-echo | tee -a $LOG_FILE
-echo "=== $SCRIPT_FILE is starting at $(date) ===" | tee -a $LOG_FILE
+echo >> $LOG_FILE
+echo "=== $SCRIPT_FILE is starting at $(date) ===" >> $LOG_FILE
 
 USE_FORCE_LUKE=no
 if [[ $# = 1 ]] && [[ $1 = "--force" ]]; then
-    echo "Using force" | tee -a $LOG_FILE
+    echo "Using force" >> $LOG_FILE
     USE_FORCE_LUKE=yes
 fi
 
 # $1 = repo, $2 = branch
 check_repo() {
     pushd $1 >/dev/null
-    git fetch origin | tee -a $LOG_FILE
+    git fetch origin >> $LOG_FILE
     LOCAL=$(git rev-parse $2)
     REMOTE=$(git rev-parse origin/$2)
     if [ $LOCAL != $REMOTE ]; then
-        echo "$1 is outdated, git pull and re-deploy" | tee -a $LOG_FILE
-        git pull origin $2 | tee -a $LOG_FILE
+        echo "$1 is outdated, git pull and re-deploy" >> $LOG_FILE
+        git pull origin $2 >> $LOG_FILE
         STATUS=updated
     else
-        echo "$1 is up-to-date" | tee -a $LOG_FILE
+        echo "$1 is up-to-date" >> $LOG_FILE
         STATUS=fresh
     fi
     popd >/dev/null
@@ -38,9 +40,9 @@ ANSIBLE_STATUS=$(check_repo pepyatka-ansible {{ pepyatka_ansible_branch }})
 if [[ $SERVER_STATUS == updated ]] || [[ $HTML_STATUS == updated ]] || [[ $ANSIBLE_STATUS == updated ]] || [[ $USE_FORCE_LUKE == yes ]]; then
     cd pepyatka-ansible >/dev/null
 {% if vault_password_file is defined %}
-    ansible-playbook -i {{ pepyatka_deploy_inventory }} playbooks/site.yml --connection=local --vault-password-file=/root/pepyatka.vault | tee -a $LOG_FILE
+    ansible-playbook -i {{ pepyatka_deploy_inventory }} playbooks/site.yml --connection=local --vault-password-file=/root/pepyatka.vault >> $LOG_FILE
 {% else %}
-    ansible-playbook -i {{ pepyatka_deploy_inventory }} playbooks/site.yml --connection=local | tee -a $LOG_FILE
+    ansible-playbook -i {{ pepyatka_deploy_inventory }} playbooks/site.yml --connection=local >> $LOG_FILE
 {% endif %}
-    echo "=== done at $(date) ===" | tee -a $LOG_FILE
+    echo "=== done at $(date) ===" >> $LOG_FILE
 fi
