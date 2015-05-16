@@ -3,20 +3,20 @@
 ansible_ssh_user: ubuntu
 pepyatka_service_name: FreeFeed
 pepyatka_hostname: freefeed.net
-pepyatka_origin=freefeed.net
-pepyatka_server_repo=https://github.com/freefeed/pepyatka-server.git
-pepyatka_server_branch=release
-pepyatka_html_repo=https://github.com/freefeed/pepyatka-html.git
-pepyatka_html_branch=release
-pepyatka_ansible_repo=https://github.com/pepyatka/pepyatka-ansible.git
-pepyatka_ansible_branch=master
-pepyatka_redis_host=pepyatka-prod-1.gfaoo9.ng.0001.euw1.cache.amazonaws.com
-pepyatka_files_dir=/var/pepyatka-files
-pepyatka_file_size_limit='50mb'
-nginx_client_max_body_size='50M'
-pepyatka_node_env=production
-pepyatka_frontend_scheme=https
-pepyatka_server_host=localhost
+pepyatka_origin: freefeed.net
+pepyatka_server_repo: https://github.com/freefeed/pepyatka-server.git
+pepyatka_server_branch: release
+pepyatka_html_repo: https://github.com/freefeed/pepyatka-html.git
+pepyatka_html_branch: release
+pepyatka_ansible_repo: https://github.com/pepyatka/pepyatka-ansible.git
+pepyatka_ansible_branch: master
+pepyatka_redis_host: pepyatka-prod-1.gfaoo9.ng.0001.euw1.cache.amazonaws.com
+pepyatka_files_dir: /var/pepyatka-files
+pepyatka_file_size_limit: '50mb'
+nginx_client_max_body_size: '50M'
+pepyatka_node_env: production
+pepyatka_frontend_scheme: https
+pepyatka_server_host: localhost
 pepyatka_server_instances:
   - 3001
   - 3002
@@ -24,8 +24,8 @@ pepyatka_mailer_smtp_enabled: True
 pepyatka_mailer_from_name: FreeFeed.net
 pepyatka_mailer_from_email: freefeed.net@gmail.com
 pepyatka_accept_hashed_passwords_only: 'true'
-pepyatka_ga_account='UA-62517081-1'
-nginx_restrict_users_ip=136.243.23.88
-nginx_use_proxy_protocol=True
-pepyatka_deploy_inventory=freefeed.net
-vault_password_file=pepyatka.vault
+pepyatka_ga_account: 'UA-62517081-1'
+nginx_restrict_users_ip: 136.243.23.88
+nginx_use_proxy_protocol: True
+pepyatka_deploy_inventory: freefeed.net
+vault_password_file: pepyatka.vault
