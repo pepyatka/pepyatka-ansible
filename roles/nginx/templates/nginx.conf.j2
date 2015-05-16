@@ -40,12 +40,15 @@ http {
     index   index.html index.htm;
 
     upstream app_pepyatka {
-      server {{ pepyatka_server_host }}:{{ pepyatka_server_port }};
+      ip_hash;
+{% for port in pepyatka_server_instances %}
+      server {{ pepyatka_server_host }}:{{ port }};
+{% endfor %}
     }
 
 {% if server_cert is defined %}
     server {
-      listen         80 {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
+      listen         80 {{ nginx_use_proxy_protocol | ternary('proxy_protocol', '') }};
       server_name    {{ pepyatka_hostname }};
       return         301 https://$server_name$request_uri;
     }
@@ -53,15 +56,15 @@ http {
 
     server {
 {% if server_cert is defined %}
-      listen 443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
-      listen [::]:443 ssl spdy {{ nginx_behind_elb | ternary('proxy_protocol', '') }};
+      listen 443 ssl spdy {{ nginx_use_proxy_protocol | ternary('proxy_protocol', '') }};
+      listen [::]:443 ssl spdy {{ nginx_use_proxy_protocol | ternary('proxy_protocol', '') }};
       add_header Strict-Transport-Security "max-age=31536000";
       ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 {% else %}
       listen 80;
 {% endif %}
       server_name {{ pepyatka_hostname }};
-      access_log /var/log/nginx/pepyatka.log {{ nginx_behind_elb | ternary('elb_log', 'main') }};
+      access_log /var/log/nginx/pepyatka.log {{ nginx_use_proxy_protocol | ternary('elb_log', 'main') }};
 
 {% if pepyatka_frontend_scheme == "https" and server_cert is not defined %}
       if ($http_x_forwarded_proto = 'http') {
