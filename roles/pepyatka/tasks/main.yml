@@ -132,6 +132,10 @@
   notify: Restart pepyatka-server instances
   tags: pepyatka
 
+- name: Deploy logrotate config for pepyatka instances
+  template: src=logrotate.j2 dest=/etc/logrotate.d/pepyatka
+  tags: pepyatka
+
 - name: Start pepyatka-server instances
   service: name=pepyatka-{{ item }} state=started enabled=yes
   with_items: pepyatka_server_instances
