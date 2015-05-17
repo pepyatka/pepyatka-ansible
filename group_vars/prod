@@ -18,8 +18,8 @@ pepyatka_node_env: production
 pepyatka_frontend_scheme: https
 pepyatka_server_host: localhost
 pepyatka_server_instances:
+  - 3000
   - 3001
-  - 3002
 pepyatka_mailer_smtp_enabled: True
 pepyatka_mailer_from_name: FreeFeed.net
 pepyatka_mailer_from_email: freefeed.net@gmail.com
