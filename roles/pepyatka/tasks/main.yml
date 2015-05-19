@@ -3,17 +3,14 @@
 - fail: msg="Pepyatka server is only supported for Ubuntu"
   when: ansible_distribution != 'Ubuntu'
 
-- name: Add the myway apt repository
-  apt_repository: repo="ppa:dhor/myway" state=present
-  tags:
+- name: Install required packages
+  apt: name={{ item }} state=present
+  with_items:
     - graphicsmagick
-    - pepyatka
-
-- name: Install GraphicsMagick
-  apt: name=graphicsmagick state=present update-cache=yes
-  tags:
-    - graphicsmagick
-    - pepyatka
+    - git
+    - make
+    - g++
+  tags: pepyatka
 
 - name: Create pepyatka user
   user:
@@ -21,14 +18,6 @@
     home: "{{ pepyatka_home_dir }}"
     createhome: yes
     system: yes
-  tags: pepyatka
-
-- name: Install required packages
-  apt: name={{ item }} state=present
-  with_items:
-    - git
-    - make
-    - g++
   tags: pepyatka
 
 - name: Check if pepyatka-server repo already exists
@@ -116,7 +105,6 @@
     dest: "{{ pepyatka_home_dir }}/pepyatka-server/app/scripts/views/mailer/resetPassword.ejs"
     owner: "{{ pepyatka_user }}"
     group: "{{ pepyatka_group }}"
-  register: pepyatka_config
   tags: pepyatka
 
 - name: Create directories for attachments, thumbnails and profile pictures
@@ -138,56 +126,29 @@
   when: pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed
   tags: pepyatka
 
-- name: Install pm2
-  npm: name=pm2 global=yes state=latest
+- name: Deploy upstart config files
+  template: src=pepyatka.upstart.j2 dest=/etc/init/pepyatka-{{ item }}.conf
+  with_items: pepyatka_server_instances
+  register: upstart_config
   tags: pepyatka
 
-- name: Check if pm2 startup has been run already
-  stat: path=/etc/init.d/pm2-init.sh
-  register: pm2_init
+- name: Deploy logrotate config for pepyatka instances
+  template: src=logrotate.j2 dest=/etc/logrotate.d/pepyatka
   tags: pepyatka
 
-- name: Init pm2
-  command: "pm2 startup ubuntu -u {{ pepyatka_user }}"
-  when: not pm2_init.stat.exists
+- name: Start pepyatka-server instances
+  service: name=pepyatka-{{ item }} state=started enabled=yes
+  with_items: pepyatka_server_instances
+  register: start_pepyatka
   tags: pepyatka
 
-- name: Get list of pm2 apps running
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  command: pm2 list
-  register: pm2_list_1
-  changed_when: false
-  tags: pepyatka
-
-- name: Stop pepyatka
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  command: pm2 {{ item }} pepyatka
-  with_items:
-    - stop
-    - delete
-  when: (pm2_list_1.stdout.find('pepyatka') != -1 and (pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed)) or (pm2_list_1.stdout.find('errored') != -1)
-  tags: pepyatka
-
-- name: Get list of pm2 apps running
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  command: pm2 list
-  register: pm2_list_2
-  changed_when: false
-  tags: pepyatka
-
-- name: Start pepyatka-server
-  sudo: yes
-  sudo_user: "{{ pepyatka_user }}"
-  environment:
-    NODE_ENV: "{{ pepyatka_node_env }}"
-  command: chdir="{{ pepyatka_home_dir }}" pm2 start --name pepyatka pepyatka-server/index.js
-  when: pm2_list_2.stdout.find('pepyatka') == -1
+- name: Restart pepyatka-server instances
+  service: name=pepyatka-{{ item }} state=restarted
+  with_items: pepyatka_server_instances
+  when: (pepyatka_server.changed or pepyatka_config.changed or upstart_config.changed) and not start_pepyatka.changed
   tags: pepyatka
 
 - name: Ensure pepyatka is up and running
-  wait_for: host=localhost port={{ pepyatka_server_port }} timeout=30 state=started
-  tags:
-    - nginx
+  wait_for: host=localhost port={{ item }} timeout=30 state=started
+  with_items: pepyatka_server_instances
+  tags: pepyatka
