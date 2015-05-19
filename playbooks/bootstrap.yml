@@ -76,7 +76,7 @@
       cron:
         name="Deploy pepyatka"
         cron_file=check-deploy
-        job=/root/check-deploy
+        job="/root/check-deploy >> {{ pepyatka_deploy_log_dir }}/check-deploy.log 2>&1"
         user=root
         minute="*/5"
         state=present
