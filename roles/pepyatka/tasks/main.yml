@@ -129,7 +129,7 @@
 - name: Deploy upstart config files
   template: src=pepyatka.upstart.j2 dest=/etc/init/pepyatka-{{ item }}.conf
   with_items: pepyatka_server_instances
-  notify: Restart pepyatka-server instances
+  register: upstart_config
   tags: pepyatka
 
 - name: Deploy logrotate config for pepyatka instances
@@ -145,7 +145,7 @@
 - name: Restart pepyatka-server instances
   service: name=pepyatka-{{ item }} state=restarted
   with_items: pepyatka_server_instances
-  when: (pepyatka_server.changed or pepyatka_config.changed) and not start_pepyatka.changed
+  when: (pepyatka_server.changed or pepyatka_config.changed or upstart_config.changed) and not start_pepyatka.changed
   tags: pepyatka
 
 - name: Ensure pepyatka is up and running
