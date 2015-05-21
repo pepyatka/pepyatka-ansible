@@ -1,4 +1,13 @@
-/var/log/pepyatka/*
+/var/log/pepyatka/* {
+  size 1M
+  rotate 7
+  missingok
+  notifempty
+  compress
+  delaycompress
+  sharedscripts
+}
+
 {{ pepyatka_home_dir }}/pepyatka-server/log/* {
   su {{ pepyatka_user }} {{ pepyatka_group }}
   size 1M
@@ -8,6 +17,4 @@
   compress
   delaycompress
   sharedscripts
-  dateext
-  dateformat %Y-%m-%d
 }
