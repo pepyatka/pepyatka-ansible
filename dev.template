@@ -10,8 +10,10 @@
 [all:vars]
 ansible_ssh_user=<ubuntu or root>
 pepyatka_hostname=<your server ip/hostname>
-pepyatka_server_repo=<optional, public link to your fork on github>
-pepyatka_server_branch=<optional, set if you override pepyatka_server_repo above>
-pepyatka_html_repo=<optional, public link to your fork on github>
-pepyatka_html_branch=<optional, set if you override pepyatka_html_repo above>
 pepyatka_deploy_inventory=dev
+pepyatka_ansible_repo=https://github.com/pepyatka/pepyatka-ansible.git
+pepyatka_ansible_branch=master
+pepyatka_server_repo=https://github.com/pepyatka/pepyatka-server.git
+pepyatka_server_branch=development
+pepyatka_html_repo=https://github.com/pepyatka/pepyatka-html.git
+pepyatka_html_branch=development
