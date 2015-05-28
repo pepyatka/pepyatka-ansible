@@ -1,0 +1,17 @@
+[pepyatka]
+<your server ip/hostname>
+
+[nginx]
+<your server ip/hostname>
+
+[redis]
+<your server ip/hostname>
+
+[all:vars]
+ansible_ssh_user=<ubuntu or root>
+pepyatka_hostname=<your server ip/hostname>
+pepyatka_server_repo=<optional, public link to your fork on github>
+pepyatka_server_branch=<optional, set if you override pepyatka_server_repo above>
+pepyatka_html_repo=<optional, public link to your fork on github>
+pepyatka_html_branch=<optional, set if you override pepyatka_html_repo above>
+pepyatka_deploy_inventory=dev
