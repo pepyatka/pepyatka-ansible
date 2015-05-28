@@ -28,7 +28,7 @@ Install ansible, clone this repo, replace placeholders in inventory 'local' with
 
     ansible-playbook -i local playbooks/site.yml --connection=local
 
-### Boostrap
+### Bootsrap
 You can boostrap a VM (e.g. an instance in Digital Ocean) with ansible. It will install everything and configure a cron job which will poll git repos for changes and redeploy pepyatka if needed.
 
 Copy dev.template to dev, replace placeholders with your data and run:
