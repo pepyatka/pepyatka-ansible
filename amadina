@@ -12,3 +12,4 @@ ansible_ssh_user=root
 pepyatka_hostname=188.166.13.35
 pepyatka_deploy_inventory=amadina
 pepyatka_server_host=api.amadina.pepyatka.com
+pepyatka_hostname=amadina.pepyatka.com
