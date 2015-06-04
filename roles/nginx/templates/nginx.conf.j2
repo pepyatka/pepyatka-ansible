@@ -42,7 +42,7 @@ http {
     upstream app_pepyatka {
       ip_hash;
       proxy_connect_timeout 5s;
-      proxy_next_upstream_timeout 5s;
+      proxy_next_upstream_timeout 6s;
 {% for port in pepyatka_server_instances %}
       server {{ pepyatka_server_host }}:{{ port }};
 {% endfor %}
