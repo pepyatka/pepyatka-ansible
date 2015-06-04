@@ -58,10 +58,17 @@ http {
       server_name {{ pepyatka_hostname }};
       include pepyatka-common.conf;
 
-      location / {
+      location ~ ^/(css|js|img|fonts)/.*$ {
         root /var/www/pepyatka-html/public;
         access_log off;
         expires max;
+        try_files $uri $uri/ /index.html?/$request_uri;
+      }
+
+      location / {
+        root /var/www/pepyatka-html/public;
+        access_log off;
+        expires off;
         try_files $uri $uri/ /index.html?/$request_uri;
       }
    }
