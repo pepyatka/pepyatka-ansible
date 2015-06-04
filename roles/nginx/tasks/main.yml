@@ -232,6 +232,12 @@
     - pepyatka
     - nginx
 
+- name: Deploy nginx common config
+  template: src=pepyatka-common.conf.j2 dest=/etc/nginx/pepyatka-common.conf
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Start and enable nginx
   service: name=nginx state=started enabled=yes
   tags:
