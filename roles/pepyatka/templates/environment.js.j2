@@ -31,6 +31,15 @@ exports.getConfig = function() {
     acceptHashedPasswordsOnly: {{ pepyatka_accept_hashed_passwords_only }}
   }
 
+  config.application = {
+    USERNAME_STOP_LIST: [
+      'anonymous', 'public', 'about', 'signin', 'logout',
+      'signup', 'filter', 'settings', 'account', 'groups',
+      'friends', 'list', 'search', 'summary', 'share', '404',
+      'iphone'
+    ]
+  }
+
   config.attachments = {
     // Make sure that all directories here have a trailing slash
     urlDir: '{{ pepyatka_frontend_scheme }}://{{ pepyatka_hostname}}/attachments/original/',
