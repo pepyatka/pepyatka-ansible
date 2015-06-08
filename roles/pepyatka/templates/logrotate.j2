@@ -1,5 +1,6 @@
 /var/log/pepyatka/* {
   daily
+  copytruncate
   rotate 7
   missingok
   notifempty
@@ -10,6 +11,7 @@
 {{ pepyatka_home_dir }}/pepyatka-server/log/* {
   su {{ pepyatka_user }} {{ pepyatka_group }}
   daily
+  copytruncate
   rotate 7
   missingok
   notifempty
