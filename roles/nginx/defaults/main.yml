@@ -12,4 +12,5 @@ pepyatka_frontend_scheme: http
 pepyatka_files_dir: /var/pepyatka-files
 nginx_client_max_body_size: '10M'
 nginx_use_proxy_protocol: False
+nginx_proxy_protocol_real_ips: []
 pepyatka_ga_account: "UA-XXXXXX"

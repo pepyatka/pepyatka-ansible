@@ -238,6 +238,13 @@
     - pepyatka
     - nginx
 
+- name: Deploy dhparams.pem
+  copy: content="{{ nginx_ssl_dhparam }}" dest=/etc/ssl/dhparams.pem
+  when: nginx_ssl_dhparam is defined
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Start and enable nginx
   service: name=nginx state=started enabled=yes
   tags:
