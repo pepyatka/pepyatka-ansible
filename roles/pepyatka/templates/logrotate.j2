@@ -1,20 +1,26 @@
 /var/log/pepyatka/* {
-  daily
-  copytruncate
-  rotate 7
   missingok
   notifempty
   compress
   delaycompress
+  sharedscripts
+  postrotate
+{% for port in pepyatka_server_instances %}
+  service pepyatka-{{ port }} restart
+{% endfor %}
+  endscript
 }
 
 {{ pepyatka_home_dir }}/pepyatka-server/log/* {
   su {{ pepyatka_user }} {{ pepyatka_group }}
-  daily
-  copytruncate
-  rotate 7
   missingok
   notifempty
   compress
   delaycompress
+  sharedscripts
+  postrotate
+{% for port in pepyatka_server_instances %}
+  service pepyatka-{{ port }} restart
+{% endfor %}
+  endscript
 }
