@@ -79,7 +79,12 @@ exports.getConfig = function() {
 
   config.redis = {
     host: '{{ pepyatka_redis_host }}',
-    port: {{ pepyatka_redis_port }}
+    port: {{ pepyatka_redis_port }},
+    options: {
+      retry_max_delay: 2000,
+      connect_timeout: 5000,
+      max_attempts: 2
+    }
   }
 
   return config
