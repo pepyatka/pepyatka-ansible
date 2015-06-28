@@ -119,7 +119,7 @@
     - nginx
 
 - name: Install pepyatka-html dependencies
-  npm: path=/var/www/pepyatka-html
+  npm: path=/var/www/pepyatka-html state=latest
   when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka

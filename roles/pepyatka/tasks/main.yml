@@ -122,7 +122,7 @@
 - name: Install pepyatka-server dependencies
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
-  npm: path="{{ pepyatka_home_dir }}/pepyatka-server"
+  npm: path="{{ pepyatka_home_dir }}/pepyatka-server" state=latest
   when: pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed
   tags: pepyatka
 

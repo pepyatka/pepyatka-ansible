@@ -20,7 +20,7 @@ pre-start script
     mkdir -p $LOG_DIR
 end script
 
-exec start-stop-daemon --start --chuid {{ pepyatka_user }} --chdir {{ pepyatka_home_dir }} --make-pidfile --pidfile /var/run/pepyatka-{{ item }}.pid --exec /usr/bin/node -- $APPLICATION >> ${LOG_DIR}/${PEPYATKA_SERVER_PORT}.out 2>&1 3>>${LOG_DIR}/${PEPYATKA_SERVER_PORT}.err
+exec start-stop-daemon --start --chuid {{ pepyatka_user }} --chdir {{ pepyatka_home_dir }} --make-pidfile --pidfile /var/run/pepyatka-{{ item }}.pid --exec /usr/bin/iojs -- $APPLICATION >> ${LOG_DIR}/${PEPYATKA_SERVER_PORT}.out 2>&1 3>>${LOG_DIR}/${PEPYATKA_SERVER_PORT}.err
 
 post-start script
     echo "pepyatka-server started on port $PEPYATKA_SERVER_PORT"
