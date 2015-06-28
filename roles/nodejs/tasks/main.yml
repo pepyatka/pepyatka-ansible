@@ -9,12 +9,12 @@
     - nodejs
 
 - name: Add the nodesource apt repository
-  apt_repository: repo="deb https://deb.nodesource.com/node_0.12 trusty main" state=present
+  apt_repository: repo="deb https://deb.nodesource.com/iojs_2.x trusty main" state=present
   tags:
     - nodejs
 
 - name: Install NodeJS packages
-  apt: name=nodejs state=present
+  apt: name=iojs state=latest
   tags:
     - nodejs
 
