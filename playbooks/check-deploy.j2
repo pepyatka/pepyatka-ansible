@@ -23,7 +23,7 @@ check_repo() {
     REMOTE=$(git rev-parse origin/$2)
     if [ $LOCAL != $REMOTE ]; then
         echo "$1 is outdated, git pull and re-deploy" >> $LOG_FILE
-        git pull origin $2 &>> $LOG_FILE
+        git reset --hard origin/$2 &>> $LOG_FILE
         STATUS=updated
     else
         echo "$1 is up-to-date" >> $LOG_FILE
