@@ -1,4 +1,4 @@
-/var/log/pepyatka/* {
+/var/log/pepyatka/*.out {
   missingok
   notifempty
   compress
@@ -11,7 +11,7 @@
   endscript
 }
 
-{{ pepyatka_home_dir }}/pepyatka-server/log/* {
+{{ pepyatka_home_dir }}/pepyatka-server/log/*.log {
   su {{ pepyatka_user }} {{ pepyatka_group }}
   missingok
   notifempty
