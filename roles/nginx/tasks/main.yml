@@ -118,9 +118,15 @@
     - pepyatka
     - nginx
 
+- name: Cleanup local node_modules
+  file: path=/var/www/pepyatka-html/node_modules state=absent
+  when: pepyatka_html.changed or pepyatka_html_init.changed
+  tags:
+    - pepyatka
+    - nginx
+
 - name: Install pepyatka-html dependencies
   npm: path=/var/www/pepyatka-html state=latest
-  when: pepyatka_html.changed or pepyatka_html_init.changed
   tags:
     - pepyatka
     - nginx

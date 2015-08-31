@@ -82,14 +82,6 @@
   when: pepyatka_server_local_version.stdout != pepyatka_server_remote_version.stdout
   tags: pepyatka
 
-- name: Remove development and test environments (pepyatka may fail to start for some reason)
-  file: path={{ pepyatka_home_dir }}/pepyatka-server/config/environments/{{ item }}.js state=absent
-  with_items:
-    - development
-    - test
-  when: pepyatka_node_env != "development" and pepyatka_node_env != "test"
-  tags: pepyatka
-
 - name: Deploy pepaytka config
   template:
     src: environment.js.j2
@@ -119,11 +111,15 @@
   tags:
     - pepyatka
 
+- name: Cleanup local node_modules
+  file: path="{{ pepyatka_home_dir }}/pepyatka-server/node_modules" state=absent
+  when: pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed
+  tags: pepyatka
+
 - name: Install pepyatka-server dependencies
   sudo: yes
   sudo_user: "{{ pepyatka_user }}"
   npm: path="{{ pepyatka_home_dir }}/pepyatka-server" state=latest
-  when: pepyatka_server.changed or pepyatka_server_init.changed or pepyatka_config.changed
   tags: pepyatka
 
 - name: Deploy upstart config files
